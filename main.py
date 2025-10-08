@@ -12,7 +12,7 @@ def brightness(img: np.ndarray, k: np.double = 0.5) -> np.ndarray:
     return (img * k)
 
 def negative(img: np.ndarray) -> np.ndarray:
-    return 1 - img
+    return (1 - img)
 
 def threshold(img: np.ndarray, k: np.double = 0.5) -> np.ndarray:
     return (img > k) * 1.0 # transform boolean into double
@@ -29,6 +29,16 @@ def log(img: np.ndarray, c: np.double = 1) -> np.ndarray:
 
 def gamma(img: np.ndarray, y: np.double, c: np.double = 1) -> np.ndarray:
     return c * np.pow(img, y) 
+
+def intensity_level_slicing(img: np.ndarray, a: float = 0, b: float = 1, darken: bool = False, binary: bool = False):
+    condition = (img >= a) & (img <= b)
+
+    yes = 0 if darken else 1
+    no = 0 if binary else img
+
+    new = np.where(condition, yes, no)
+
+    return new
 
 def bit_slice(img: np.ndarray, k: np.uint8):
     return img & (2**(k-1))
@@ -67,22 +77,22 @@ def read_steganography(img: np.ndarray) -> str:
     return "".join(msg) # transformando lista de caracteres em uma string
 
 def histogram(img: np.ndarray) -> np.ndarray:
-    hist = np.zeros(shape=256, dtype=int)
-    for pixel in np.nditer(img):
-        hist[pixel] += 1
+    hist = np.bincount(img.ravel(), minlength=256)
+    # hist = np.zeros(shape=256, dtype=int)
+    # for pixel in np.nditer(img):
+    #     hist[pixel] += 1
     return hist
- 
+
 def plot_histgram(hist: np.array) -> None:
     fig, ax = plt.subplots()
     ax.plot(hist)
-    ax.set_xlim(0, 255)
-    ax.set_ylim(0)
-    ax.set_xticks(np.arange(0, 256, 10), minor=True)
+    # ax.set_xlim(0, 255)
+    # ax.set_ylim(0)
+    # ax.set_xticks(np.arange(0, 256, 10), minor=True)
     plt.show()
 
 def histogram_equalization(img: np.ndarray) -> np.ndarray:
     hist = histogram(img)
-    # hist = np.bincount(img.ravel(), minlength=256)
 
     prob = hist / img.size
     dist = np.cumsum(prob)
@@ -98,13 +108,13 @@ def main():
         print("Could not read the image!")
         return 0
 
-    new = histogram_equalization(img)
+    img = convert(img)
 
-    cv.imshow("Image", img)
-    cv.waitKey(0)
-    cv.imshow("Image", new)
-    cv.waitKey(0)
+    new = intensity_level_slicing(img, 0.25, 0.75, False, True)
+
+    print(new)
 
     return 0
 
-main()
+if __name__ == "__main__":
+    main()
