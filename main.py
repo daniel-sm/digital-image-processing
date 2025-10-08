@@ -15,14 +15,14 @@ def negative(img: np.ndarray) -> np.ndarray:
     return (1 - img)
 
 def threshold(img: np.ndarray, k: np.double = 0.5) -> np.ndarray:
-    return (img > k) * 1.0 # transform boolean into double
+    return (img > k).astype(np.double)
 
 def constrast(img: np.ndarray) -> np.ndarray:
-    min = np.min(img)
-    tmp = img - min
-    max = np.max(tmp)
-    tmp = tmp / max
-    return tmp
+    minimum = np.min(img)
+    new = img - minimum
+    maximum = np.max(new)
+    new = new / max
+    return new
 
 def log(img: np.ndarray, c: np.double = 1) -> np.ndarray:
     return c * np.log2(1 + img)
@@ -30,7 +30,13 @@ def log(img: np.ndarray, c: np.double = 1) -> np.ndarray:
 def gamma(img: np.ndarray, y: np.double, c: np.double = 1) -> np.ndarray:
     return c * np.pow(img, y) 
 
-def intensity_level_slicing(img: np.ndarray, a: float = 0, b: float = 1, highlight: bool = True, binary: bool = False):
+def intensity_level_slicing(
+        img: np.ndarray, 
+        a: float = 0, 
+        b: float = 1, 
+        highlight: bool = True, 
+        binary: bool = False
+    ) -> np.ndarray:
     condition = (img >= a) & (img <= b) # destacando valores no intervalo
 
     yes = 1.0 if highlight else 0.0 # decidindo se vai escurecer ou clarear no intervalo
@@ -41,40 +47,38 @@ def intensity_level_slicing(img: np.ndarray, a: float = 0, b: float = 1, highlig
 
     return new # retornando nova imagem
 
-def bit_slice(img: np.ndarray, k: np.uint8):
-    return img & (2**(k-1))
+def bit_slice(img: np.ndarray, k: np.uint8) -> np.ndarray:
+    return img & (2 ** (k - 1))
 
 def write_steganography(img: np.ndarray, msg: str) -> np.ndarray:
+    msg += '\0'
+
+    bits = np.fromiter(
+        (int(bit) for char in msg for bit in format(ord(char), '08b')),
+        dtype=np.uint8
+        )
+    length = bits.size
+
     new = img.flatten()
 
-    bits = [int(bit) for char in msg for bit in format(ord(char), '08b')]
-    length = len(bits)
-
     if(length > new.size):
-        print("Mensagem muito grande para a imagem!")
-        return None
+        raise ValueError("Mensagem muito grande para a imagem!")
 
-    new[:length] = new[:length] & 0b11111110
-    new[:length] = new[:length] | np.array(bits)
+    new[:length] = (new[:length] & 0b1111_1110) | bits
 
-    new = new.reshape(img.shape)
-
-    return new
+    return new.reshape(img.shape)
 
 def read_steganography(img: np.ndarray) -> str:
-    msg = []
-    char = 0
-    bits = 0
-    for pixel in np.nditer(img):
-        bit = pixel & 0b00000001
-        char = (char << 1) | bit
-        bits += 1
-        if (bits == 8):
-            if (char != 0):
-                msg.append(chr(char))
-            bits = 0
-            char = 0
-    return "".join(msg) # transformando lista de caracteres em uma string
+    bits = (img.flatten() & 1)
+    multiple_of_8 = (bits.size // 8) * 8 
+    bits = bits[:multiple_of_8]
+
+    chars = np.packbits(bits)
+
+    msg = "".join(map(chr, chars))
+    msg = msg[ : msg.find('\0')]
+
+    return msg
 
 def histogram(img: np.ndarray) -> np.ndarray:
     hist = np.bincount(img.ravel(), minlength=256)
@@ -101,7 +105,11 @@ def histogram_equalization(img: np.ndarray) -> np.ndarray:
     new = s[img]
     return new
 
-def piecewise_linear(img: np.ndarray, p1: list[float], p2: list[float])  -> np.ndarray:
+def piecewise_linear(
+        img: np.ndarray, 
+        p1: list[float], 
+        p2: list[float]
+    )  -> np.ndarray:
     # obtendo as coordenadas dos pontos
     x1, y1 = p1
     x2, y2 = p2
@@ -166,9 +174,9 @@ def main():
 
     new = write_steganography(img, msg)
 
-    msg2 = read_steganography(img)
+    res = read_steganography(new)
 
-    print(msg2)
+    print(res == msg)
 
     cv.imshow("Image", img)
     cv.waitKey(0)
