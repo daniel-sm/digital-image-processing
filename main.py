@@ -45,21 +45,20 @@ def bit_slice(img: np.ndarray, k: np.uint8):
     return img & (2**(k-1))
 
 def write_steganography(img: np.ndarray, msg: str) -> np.ndarray:
-    new = img.copy()
-    msg_index = 0
-    shift = 7
-    msg_length = len(msg)
-    for index, pixel in np.ndenumerate(img):
-        if (shift < 0):
-            shift = 7
-            msg_index += 1
-        if (msg_index < msg_length):
-            char = ord(msg[msg_index])
-            bit = (char >> shift) & 0b00000001
-            new[index] = (pixel & 0b11111110) | bit # definindo ultimo bit do pixel
-            shift -= 1
-        else:
-            new[index] = pixel & 0b11111110 # restante dos pixels vai zerar o ultimo bit
+    new = img.flatten()
+
+    bits = [int(bit) for char in msg for bit in format(ord(char), '08b')]
+    length = len(bits)
+
+    if(length > new.size):
+        print("Mensagem muito grande para a imagem!")
+        return None
+
+    new[:length] = new[:length] & 0b11111110
+    new[:length] = new[:length] | np.array(bits)
+
+    new = new.reshape(img.shape)
+
     return new
 
 def read_steganography(img: np.ndarray) -> str:
@@ -161,17 +160,20 @@ def main():
         print("Could not read the image!")
         return 0
 
-    img = convert(img)
+    # img = convert(img)
 
-    array = np.array([10, 20, 30, 40, 50, 60, 70, 80, 90]).reshape((3, 3))
-    print('array')
-    print(array)
-    kernel = np.array([1, 1, 1, 1, 1, 1, 1, 1, 1]).reshape((3, 3))
-    print('kernel')
-    print(kernel)
-    result = convolution(array, kernel)
-    print('result')
-    print(result)
+    msg = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+
+    new = write_steganography(img, msg)
+
+    msg2 = read_steganography(img)
+
+    print(msg2)
+
+    cv.imshow("Image", img)
+    cv.waitKey(0)
+    cv.imshow("Image", new)
+    cv.waitKey(0)
 
     return 0
 
