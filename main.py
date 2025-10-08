@@ -34,7 +34,8 @@ def intensity_level_slicing(img: np.ndarray, a: float = 0, b: float = 1, darken:
     condition = (img >= a) & (img <= b)
 
     yes = 0 if darken else 1
-    no = 0 if binary else img
+    no = 1 - yes
+    no = no if binary else img
 
     new = np.where(condition, yes, no)
 
