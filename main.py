@@ -36,7 +36,7 @@ def intensity_level_slicing(img: np.ndarray, a: float = 0, b: float = 1, highlig
     yes = 1.0 if highlight else 0.0 # decidindo se vai escurecer ou clarear no intervalo
     no = 1.0 - yes # obtendo o inverso da cor no intervalo
     no = no if binary else img # decidindo se vai manter as outras cores
- 
+
     new = np.where(condition, yes, no) # construindo a imagem de saida
 
     return new # retornando nova imagem
@@ -132,6 +132,28 @@ def piecewise_linear(img: np.ndarray, p1: list[float], p2: list[float])  -> np.n
     # retornando imagem final
     return new
 
+def convolution(img: np.ndarray, kernel: np.ndarray) -> np.ndarray:
+    # criando nova imagem no mesmo formato
+    new = np.empty_like(img)
+
+    # obtendo o tamanho do kernel 
+    kernel_length = kernel.shape[0]
+    # baseado no kernel calcula tamanho do preenchimento
+    pad_width = kernel_length // 2
+    # realizando preenchimento da matriz
+    padded = np.pad(img, pad_width, mode='edge')
+    print('padded')
+    print(padded)
+
+    # percorrendo a imagem processando os valores da nova imagem
+    for index, _ in np.ndenumerate(img):
+        i, j = index
+        matrix = padded[i : (i + kernel_length), j : (j + kernel_length)]
+        new[index] = np.vdot(matrix, kernel)
+
+    # retornando nova imagem processada
+    return new
+
 def main():
     img = cv.imread("paisagem.jpg", cv.IMREAD_GRAYSCALE)
 
@@ -141,10 +163,15 @@ def main():
 
     img = convert(img)
 
-    cv.imshow("Image", img)
-    cv.waitKey(0)
-    # cv.imshow("Image", new)
-    # cv.waitKey(0)
+    array = np.array([10, 20, 30, 40, 50, 60, 70, 80, 90]).reshape((3, 3))
+    print('array')
+    print(array)
+    kernel = np.array([1, 1, 1, 1, 1, 1, 1, 1, 1]).reshape((3, 3))
+    print('kernel')
+    print(kernel)
+    result = convolution(array, kernel)
+    print('result')
+    print(result)
 
     return 0
 
