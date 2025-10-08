@@ -30,16 +30,16 @@ def log(img: np.ndarray, c: np.double = 1) -> np.ndarray:
 def gamma(img: np.ndarray, y: np.double, c: np.double = 1) -> np.ndarray:
     return c * np.pow(img, y) 
 
-def intensity_level_slicing(img: np.ndarray, a: float = 0, b: float = 1, darken: bool = False, binary: bool = False):
-    condition = (img >= a) & (img <= b)
+def intensity_level_slicing(img: np.ndarray, a: float = 0, b: float = 1, highlight: bool = True, binary: bool = False):
+    condition = (img >= a) & (img <= b) # destacando valores no intervalo
 
-    yes = 0 if darken else 1
-    no = 1 - yes
-    no = no if binary else img
+    yes = 1.0 if highlight else 0.0 # decidindo se vai escurecer ou clarear no intervalo
+    no = 1.0 - yes # obtendo o inverso da cor no intervalo
+    no = no if binary else img # decidindo se vai manter as outras cores
+ 
+    new = np.where(condition, yes, no) # construindo a imagem de saida
 
-    new = np.where(condition, yes, no)
-
-    return new
+    return new # retornando nova imagem
 
 def bit_slice(img: np.ndarray, k: np.uint8):
     return img & (2**(k-1))
@@ -102,6 +102,36 @@ def histogram_equalization(img: np.ndarray) -> np.ndarray:
     new = s[img]
     return new
 
+def piecewise_linear(img: np.ndarray, p1: list[float], p2: list[float])  -> np.ndarray:
+    # obtendo as coordenadas dos pontos
+    x1, y1 = p1
+    x2, y2 = p2
+
+    #  coeficientes angulares das funcoes
+    m1 = y1 / x1
+    m2 = (y2 - y1) / (x2 - x1)
+    m3 = (1 - y2) / (1 - x2)
+
+    # coeficientes lineares das funcoes
+    b2 = y1 - (m2 * x1)
+    b3 = y2 - (m3 * x2)
+
+    # criando nova imagem vazia com mesmo formato
+    new = np.empty_like(img)
+
+    # criando mascaras booleanas
+    mask1 = img <= x1
+    mask2 = (img > x1) & (img <= x2)
+    mask3 = img > x2
+
+    # aplicando as tres funcoes por mascaras
+    new[mask1] = img[mask1] * m1
+    new[mask2] = (img[mask2] * m2) + b2
+    new[mask3] = (img[mask3] * m3) + b3
+
+    # retornando imagem final
+    return new
+
 def main():
     img = cv.imread("paisagem.jpg", cv.IMREAD_GRAYSCALE)
 
@@ -111,9 +141,10 @@ def main():
 
     img = convert(img)
 
-    new = intensity_level_slicing(img, 0.25, 0.75, False, True)
-
-    print(new)
+    cv.imshow("Image", img)
+    cv.waitKey(0)
+    # cv.imshow("Image", new)
+    # cv.waitKey(0)
 
     return 0
 
