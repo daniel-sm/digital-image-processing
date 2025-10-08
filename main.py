@@ -1,5 +1,6 @@
 import cv2 as cv
 import numpy as np
+import matplotlib.pyplot as plt
 
 def convert(img: np.ndarray) -> np.ndarray:
     return img.astype(np.double) / 255
@@ -65,12 +66,53 @@ def read_steganography(img: np.ndarray) -> str:
             char = 0
     return "".join(msg) # transformando lista de caracteres em uma string
 
+def histogram(img: np.ndarray) -> np.ndarray:
+    hist = np.zeros(shape=256, dtype=int)
+    for pixel in np.nditer(img):
+        hist[pixel] += 1
+    return hist
+
+def plot_histgram(hist: np.array) -> None:
+    _, ax = plt.subplots()
+    ax.plot(hist)
+    ax.set_xlim(0, 255)
+    ax.set_ylim(0)
+    ax.set_xticks(np.arange(0, 256, 10), minor=True)
+    plt.show()
+
+def histogram_equalization(img: np.ndarray) -> np.ndarray:
+    hist = histogram(img)
+    prob = hist / img.size
+
+    acc = 0
+    for i, p in np.ndenumerate(prob):
+        acc += p
+        prob[i] = acc
+
+    s = np.round(prob * 255)
+    s = s.astype(np.uint8)
+
+    new = img.copy()
+    for index, pixel in np.ndenumerate(new):
+        new[index] = s[pixel]
+
+    return new
+
 def main():
     img = cv.imread("paisagem.jpg", cv.IMREAD_GRAYSCALE)
 
     if (img is None):
         print("Could not read the image!")
         return 0
+
+    hist = histogram(img)
+    h = histogram(histogram_equalization(img))
+
+    print(hist)
+    print(h)
+
+    plot_histgram(hist)
+    plot_histgram(h)
 
     return 0
 
