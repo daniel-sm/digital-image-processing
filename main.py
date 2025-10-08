@@ -71,9 +71,9 @@ def histogram(img: np.ndarray) -> np.ndarray:
     for pixel in np.nditer(img):
         hist[pixel] += 1
     return hist
-
+ 
 def plot_histgram(hist: np.array) -> None:
-    _, ax = plt.subplots()
+    fig, ax = plt.subplots()
     ax.plot(hist)
     ax.set_xlim(0, 255)
     ax.set_ylim(0)
@@ -82,20 +82,13 @@ def plot_histgram(hist: np.array) -> None:
 
 def histogram_equalization(img: np.ndarray) -> np.ndarray:
     hist = histogram(img)
+    # hist = np.bincount(img.ravel(), minlength=256)
+
     prob = hist / img.size
+    dist = np.cumsum(prob)
+    s = np.round(dist * 255).astype(np.uint8)
 
-    acc = 0
-    for i, p in np.ndenumerate(prob):
-        acc += p
-        prob[i] = acc
-
-    s = np.round(prob * 255)
-    s = s.astype(np.uint8)
-
-    new = img.copy()
-    for index, pixel in np.ndenumerate(new):
-        new[index] = s[pixel]
-
+    new = s[img]
     return new
 
 def main():
@@ -105,14 +98,12 @@ def main():
         print("Could not read the image!")
         return 0
 
-    hist = histogram(img)
-    h = histogram(histogram_equalization(img))
+    new = histogram_equalization(img)
 
-    print(hist)
-    print(h)
-
-    plot_histgram(hist)
-    plot_histgram(h)
+    cv.imshow("Image", img)
+    cv.waitKey(0)
+    cv.imshow("Image", new)
+    cv.waitKey(0)
 
     return 0
 
