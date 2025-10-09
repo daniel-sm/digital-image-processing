@@ -100,10 +100,9 @@ def histogram_equalization(img: np.ndarray) -> np.ndarray:
 
     prob = hist / img.size
     dist = np.cumsum(prob)
-    s = np.round(dist * 255).astype(np.uint8)
+    result = np.round(dist * 255).astype(np.uint8)
 
-    new = s[img]
-    return new
+    return result[img]
 
 def piecewise_linear(
         img: np.ndarray, 
@@ -140,23 +139,24 @@ def piecewise_linear(
     return new
 
 def convolution(img: np.ndarray, kernel: np.ndarray) -> np.ndarray:
-    # criando nova imagem no mesmo formato
-    new = np.empty_like(img)
+    # obtendo as dimensoes da imagem
+    img_height, img_width = img.shape
+    
+    # obtendo as dimensoes do kernel
+    kernel_height, kernel_width = kernel.shape
 
-    # obtendo o tamanho do kernel 
-    kernel_length = kernel.shape[0]
-    # baseado no kernel calcula tamanho do preenchimento
-    pad_width = kernel_length // 2
-    # realizando preenchimento da matriz
+    # baseado no kernel realiza o preenchimento
+    pad_width = (kernel_height // 2), (kernel_width // 2)
     padded = np.pad(img, pad_width, mode='edge')
-    print('padded')
-    print(padded)
+    
+    # criando nova imagem com mesmo formato
+    new = np.zeros_like(img)
 
-    # percorrendo a imagem processando os valores da nova imagem
-    for index, _ in np.ndenumerate(img):
-        i, j = index
-        matrix = padded[i : (i + kernel_length), j : (j + kernel_length)]
-        new[index] = np.vdot(matrix, kernel)
+    # processando os valores da nova imagem
+    for i in range(img_height):
+        for j in range(img_width):
+            matrix = padded[i : (i + kernel_height), j : (j + kernel_width)]
+            new[i, j] = np.vdot(matrix, kernel)
 
     # retornando nova imagem processada
     return new
@@ -168,15 +168,10 @@ def main():
         print("Could not read the image!")
         return 0
 
-    # img = convert(img)
+    img = convert(img)
 
-    msg = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
-
-    new = write_steganography(img, msg)
-
-    res = read_steganography(new)
-
-    print(res == msg)
+    kernel = np.ones((9, 9)) / 81
+    new = convolution(img, kernel)
 
     cv.imshow("Image", img)
     cv.waitKey(0)
