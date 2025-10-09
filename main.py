@@ -146,17 +146,16 @@ def convolution(img: np.ndarray, kernel: np.ndarray) -> np.ndarray:
     kernel_height, kernel_width = kernel.shape
 
     # baseado no kernel realiza o preenchimento
-    pad_width = (kernel_height // 2), (kernel_width // 2)
-    padded = np.pad(img, pad_width, mode='edge')
+    pad = (kernel_height // 2), (kernel_width // 2)
+    padded = np.pad(img, pad, mode='edge')
     
     # criando nova imagem com mesmo formato
     new = np.zeros_like(img)
 
     # processando os valores da nova imagem
-    for i in range(img_height):
-        for j in range(img_width):
-            matrix = padded[i : (i + kernel_height), j : (j + kernel_width)]
-            new[i, j] = np.vdot(matrix, kernel)
+    for i in range(kernel_height):
+        for j in range(kernel_width):
+            new += kernel[i, j] * padded[i : (i + img_height), j : (j + img_width)]
 
     # retornando nova imagem processada
     return new
