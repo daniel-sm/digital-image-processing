@@ -168,6 +168,11 @@ def weighted_mean_filter(img: np.ndarray, size: int) -> np.ndarray:
     kernel /= 2 * (size * size) - 2
     return convolution(img, kernel)
 
+def laplacian_filter(img: np.ndarray) -> np.ndarray:
+    kernel = np.ones((3, 3))
+    kernel[1, 1] = -8
+    return convolution(img, kernel)
+
 def main():
     img = cv.imread("paisagem.jpg", cv.IMREAD_GRAYSCALE)
 
@@ -176,7 +181,7 @@ def main():
         return 0
 
     img = convert(img)
-    new = weighted_mean_filter(img, 81)
+    new = laplacian_filter(img)
 
     cv.imshow("Image", img)
     cv.waitKey(0)
