@@ -61,9 +61,6 @@ def write_steganography(img: np.ndarray, msg: str) -> np.ndarray:
 
     new = img.flatten()
 
-    if(length > new.size):
-        raise ValueError("Mensagem muito grande para a imagem!")
-
     new[:length] = (new[:length] & 0b1111_1110) | bits
 
     return new.reshape(img.shape)
@@ -160,6 +157,17 @@ def convolution(img: np.ndarray, kernel: np.ndarray) -> np.ndarray:
     # retornando nova imagem processada
     return new
 
+def mean_filter(img: np.ndarray, size: int) -> np.ndarray:
+    kernel = np.ones((size, size)) / (size * size)
+    return convolution(img, kernel)
+
+def weighted_mean_filter(img: np.ndarray, size: int) -> np.ndarray:
+    center = size // 2
+    kernel = np.ones((size, size))
+    kernel[center, center] = (size * size) - 1
+    kernel /= 2 * (size * size) - 2
+    return convolution(img, kernel)
+
 def main():
     img = cv.imread("paisagem.jpg", cv.IMREAD_GRAYSCALE)
 
@@ -168,9 +176,7 @@ def main():
         return 0
 
     img = convert(img)
-
-    kernel = np.ones((9, 9)) / 81
-    new = convolution(img, kernel)
+    new = weighted_mean_filter(img, 81)
 
     cv.imshow("Image", img)
     cv.waitKey(0)
