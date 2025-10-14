@@ -173,6 +173,23 @@ def laplacian_filter(img: np.ndarray) -> np.ndarray:
     kernel[1, 1] = -8
     return convolution(img, kernel)
 
+def gaussian_kernel(size: int, sigma: float) -> np.ndarray:
+    half = size // 2 # obtendo a metade do tamanho do kernel
+
+    a = np.arange(-half, half + 1) # criando um vetor de coordenadas
+    x, y = np.meshgrid(a, a) # criando uma grade de coordenadas
+
+    kernel = np.exp(-(x**2 + y**2) / (2 * sigma**2)) # aplicando a formula gaussiana
+    kernel /= np.sum(kernel) # normalizando o kernel
+
+    return kernel # retornando o kernel
+
+def gaussian_filter(img: np.ndarray, size: int, sigma: float) -> np.ndarray:
+    # criando o kernel gaussiano
+    kernel = gaussian_kernel(size, sigma)
+    # aplicando a convolucao
+    return convolution(img, kernel)
+
 def main():
     img = cv.imread("paisagem.jpg", cv.IMREAD_GRAYSCALE)
 
@@ -181,7 +198,7 @@ def main():
         return 0
 
     img = convert(img)
-    new = laplacian_filter(img)
+    new = gaussian_filter(img, 9, 3.0)
 
     cv.imshow("Image", img)
     cv.waitKey(0)
