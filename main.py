@@ -1,6 +1,7 @@
 import cv2 as cv
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 
 def convert(img: np.ndarray) -> np.ndarray:
     return img.astype(np.double) / 255
@@ -84,7 +85,7 @@ def histogram(img: np.ndarray) -> np.ndarray:
     #     hist[pixel] += 1
     return hist
 
-def plot_histgram(hist: np.array) -> None:
+def plot_histogram(hist: np.array) -> None:
     fig, ax = plt.subplots()
     ax.plot(hist)
     # ax.set_xlim(0, 255)
@@ -174,31 +175,60 @@ def laplacian_filter(img: np.ndarray) -> np.ndarray:
     return convolution(img, kernel)
 
 def gaussian_kernel(size: int, sigma: float) -> np.ndarray:
-    half = size // 2 # obtendo a metade do tamanho do kernel
+    # obtendo a metade do tamanho do kernel
+    half = size // 2
 
-    a = np.arange(-half, half + 1) # criando um vetor de coordenadas
-    x, y = np.meshgrid(a, a) # criando uma grade de coordenadas
+    # criando um vetor de coordenadas
+    a = np.arange(-half, half + 1)
+    # criando uma grade de coordenadas
+    x, y = np.meshgrid(a, a)
 
-    kernel = np.exp(-(x**2 + y**2) / (2 * sigma**2)) # aplicando a formula gaussiana
-    kernel /= np.sum(kernel) # normalizando o kernel
+    # aplicando a formula gaussiana
+    kernel = np.exp(-(x**2 + y**2) / (2 * sigma**2))
+    # normalizando o kernel
+    kernel /= np.sum(kernel)
 
-    return kernel # retornando o kernel
+    # retornando o kernel
+    return kernel
 
-def gaussian_filter(img: np.ndarray, size: int, sigma: float) -> np.ndarray:
+def gaussian_filter(img: np.ndarray, size: int = 3, sigma: float = 1.0) -> np.ndarray:
     # criando o kernel gaussiano
     kernel = gaussian_kernel(size, sigma)
     # aplicando a convolucao
     return convolution(img, kernel)
 
+def median_filter(img: np.ndarray, size: int = 3) -> np.ndarray:
+    # obtendo as dimensoes da imagem
+    img_height, img_width = img.shape
+
+    # realizando preenchimento baseado no tamanho das janelas
+    pad = (size // 2)
+    padded = np.pad(img, pad, mode='edge')
+    
+    # criando array para armazenar as janelas deslocadas
+    windows_shape = (size * size, img_height, img_width)
+    windows = np.empty(windows_shape, dtype=img.dtype)
+
+    # processando as janelas deslocadas
+    for i in range(size):
+        for j in range(size):
+            window = padded[i : (i + img_height), j : (j + img_width)]
+            windows[(i * size) + j] = window
+
+    # calculando a mediana das janelas
+    new = np.median(windows, axis=0).astype(img.dtype)
+
+    # retornando nova imagem processada
+    return new
+
 def main():
-    img = cv.imread("paisagem.jpg", cv.IMREAD_GRAYSCALE)
+    img = cv.imread("image.jpg", cv.IMREAD_GRAYSCALE)
 
     if (img is None):
         print("Could not read the image!")
         return 0
-
-    img = convert(img)
-    new = gaussian_filter(img, 9, 3.0)
+    
+    new = median_filter(img, 7)
 
     cv.imshow("Image", img)
     cv.waitKey(0)

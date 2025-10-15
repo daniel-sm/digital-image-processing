@@ -6,11 +6,8 @@ def medir_tempo(func, *args, **kwargs):
     fim = time.perf_counter()
     return fim - inicio
 
-def funcao1():
-    return sum(range(1_000_000))
+def funcao1(a):
+    return a ** 2
 
-def funcao2():
-    s = 0
-    for i in range(1_000_000):
-        s += i
-    return s
+def funcao2(a):
+    return a * a
