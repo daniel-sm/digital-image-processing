@@ -158,7 +158,9 @@ def convolution(img: np.ndarray, kernel: np.ndarray) -> np.ndarray:
     return new
 
 def mean_filter(img: np.ndarray, size: int) -> np.ndarray:
+    # criando o kernel de media de acordo com o tamanho especificado
     kernel = np.ones((size, size)) / (size * size)
+    # aplicando a convolucao
     return convolution(img, kernel)
 
 def weighted_mean_filter(img: np.ndarray, size: int) -> np.ndarray:
@@ -185,17 +187,14 @@ def laplacian_filter(img: np.ndarray, diagonal: bool = False, negate: bool = Fal
 def gaussian_kernel(size: int, sigma: float) -> np.ndarray:
     # obtendo a metade do tamanho do kernel
     half = size // 2
-
-    # criando um vetor de coordenadas
+    # criando um vetor de coordenadas [-half, ..., 0, ..., half]
     a = np.arange(-half, half + 1)
-    # criando uma grade de coordenadas
+    # criando uma grade de coordenadas [[-half, ..., half], [-half, ..., half]]
     x, y = np.meshgrid(a, a)
-
     # aplicando a formula gaussiana
     kernel = np.exp(-(x**2 + y**2) / (2 * sigma**2))
     # normalizando o kernel
     kernel /= np.sum(kernel)
-
     # retornando o kernel
     return kernel
 
@@ -237,33 +236,33 @@ def sharpening_with_laplacian(img: np.ndarray, c: float = -1, diagonal: bool = F
     # retornando a imagem final
     return new
 
+def high_boost_filter(img: np.ndarray, k: float = 1) -> np.ndarray:
+    # obtendo a imagem desfocada
+    blurred = gaussian_filter(img, size=7, sigma=1.0)
+    # gerando a mascara de realce
+    mask = img - blurred
+    # aplicando a mascara na imagem original
+    new = img + (k * mask)
+    # retornando a imagem final
+    return new
+
 def main():
     img = cv.imread("image.jpg", cv.IMREAD_GRAYSCALE)
 
     if (img is None):
         print("Could not read the image!")
         return 0
-    
+
     img = convert(img)
 
-    # out = sharpening_with_laplacian(img, -0.1, True)
-    out1 = laplacian_filter(img, False, False)
-    out3 = laplacian_filter(img, False, True)
-    out2 = laplacian_filter(img, True, False)
-    out4 = laplacian_filter(img, True, True)
-
+    out = high_boost_filter(img)
+    out2 = high_boost_filter(img, k=1.5)
 
     cv.imshow("Image", img)
     cv.waitKey(0)
-    # cv.imshow("Image", out)
-    # cv.waitKey(0)
-    cv.imshow("Image", out1)
+    cv.imshow("Image", out)
     cv.waitKey(0)
     cv.imshow("Image", out2)
-    cv.waitKey(0)
-    cv.imshow("Image", out3)
-    cv.waitKey(0)
-    cv.imshow("Image", out4)
     cv.waitKey(0)
 
     return 0
