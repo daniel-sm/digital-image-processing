@@ -1,7 +1,6 @@
 import cv2 as cv
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 
 def convert(img: np.ndarray) -> np.ndarray:
     return img.astype(np.double) / 255
@@ -18,11 +17,11 @@ def negative(img: np.ndarray) -> np.ndarray:
 def threshold(img: np.ndarray, k: np.double = 0.5) -> np.ndarray:
     return (img > k).astype(np.double)
 
-def constrast(img: np.ndarray) -> np.ndarray:
+def contrast(img: np.ndarray) -> np.ndarray:
     minimum = np.min(img)
     new = img - minimum
     maximum = np.max(new)
-    new = new / max
+    new = new / maximum
     return new
 
 def log(img: np.ndarray, c: np.double = 1) -> np.ndarray:
@@ -169,9 +168,18 @@ def weighted_mean_filter(img: np.ndarray, size: int) -> np.ndarray:
     kernel /= 2 * (size * size) - 2
     return convolution(img, kernel)
 
-def laplacian_filter(img: np.ndarray) -> np.ndarray:
+def laplacian_filter(img: np.ndarray, diagonal: bool = False, negate: bool = False) -> np.ndarray:
+    # constroi matriz com apenas valores 1
     kernel = np.ones((3, 3))
-    kernel[1, 1] = -8
+    # definindo o centro do kernel
+    kernel[1, 1] = -8 if diagonal else -4
+    # excluindo os valores diagonais se especificado
+    if not diagonal:
+        kernel[0, 0] = kernel[0, 2] = kernel[2, 0] = kernel[2, 2] = 0
+    # invertendo os valores do kernel se especificado
+    if negate:
+        kernel = np.negative(kernel)
+    # aplicando a convolucao
     return convolution(img, kernel)
 
 def gaussian_kernel(size: int, sigma: float) -> np.ndarray:
@@ -221,6 +229,14 @@ def median_filter(img: np.ndarray, size: int = 3) -> np.ndarray:
     # retornando nova imagem processada
     return new
 
+def sharpening_with_laplacian(img: np.ndarray, c: float = -1, diagonal: bool = False, negate: bool = False) -> np.ndarray:
+    # gerando o laplaciano da imagem
+    laplacian = laplacian_filter(img, diagonal, negate)
+    # somando o laplaciano a imagem original
+    new = img + (c * laplacian)
+    # retornando a imagem final
+    return new
+
 def main():
     img = cv.imread("image.jpg", cv.IMREAD_GRAYSCALE)
 
@@ -228,11 +244,26 @@ def main():
         print("Could not read the image!")
         return 0
     
-    new = median_filter(img, 7)
+    img = convert(img)
+
+    # out = sharpening_with_laplacian(img, -0.1, True)
+    out1 = laplacian_filter(img, False, False)
+    out3 = laplacian_filter(img, False, True)
+    out2 = laplacian_filter(img, True, False)
+    out4 = laplacian_filter(img, True, True)
+
 
     cv.imshow("Image", img)
     cv.waitKey(0)
-    cv.imshow("Image", new)
+    # cv.imshow("Image", out)
+    # cv.waitKey(0)
+    cv.imshow("Image", out1)
+    cv.waitKey(0)
+    cv.imshow("Image", out2)
+    cv.waitKey(0)
+    cv.imshow("Image", out3)
+    cv.waitKey(0)
+    cv.imshow("Image", out4)
     cv.waitKey(0)
 
     return 0
