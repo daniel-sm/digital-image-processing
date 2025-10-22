@@ -266,6 +266,15 @@ def sobel_y_filter(img: np.ndarray):
     # aplicando a convolucao
     return convolution(img, kernel)
 
+def sobel_magnitude_filter(img: np.ndarray):
+    # obtendo os gradientes nas direcoes x e y
+    gx = sobel_x_filter(img)
+    gy = sobel_y_filter(img)
+    # calculando a magnitude do gradiente
+    new = np.sqrt(gx**2 + gy**2)
+    # retornando a imagem final
+    return new
+
 def main():
     img = cv.imread("image.jpg", cv.IMREAD_GRAYSCALE)
 
@@ -275,14 +284,11 @@ def main():
 
     img = convert(img)
 
-    out = sobel_x_filter(img)
-    out2 = sobel_y_filter(img)
+    out = sobel_magnitude_filter(img)
 
     cv.imshow("Image", img)
     cv.waitKey(0)
     cv.imshow("Image", out)
-    cv.waitKey(0)
-    cv.imshow("Image", out2)
     cv.waitKey(0)
 
     return 0
