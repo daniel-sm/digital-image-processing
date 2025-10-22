@@ -246,6 +246,26 @@ def high_boost_filter(img: np.ndarray, k: float = 1) -> np.ndarray:
     # retornando a imagem final
     return new
 
+def sobel_x_filter(img: np.ndarray):
+    # definindo o kernel sobel na direcao x
+    kernel = np.array([
+        [-1, 0, 1],
+        [-2, 0, 2],
+        [-1, 0, 1],
+    ])
+    # aplicando a convolucao
+    return convolution(img, kernel)
+
+def sobel_y_filter(img: np.ndarray):
+    # definindo o kernel sobel na direcao y
+    kernel = np.array([
+        [-1, -2, -1],
+        [0, 0, 0],
+        [1, 2, 1],
+    ])
+    # aplicando a convolucao
+    return convolution(img, kernel)
+
 def main():
     img = cv.imread("image.jpg", cv.IMREAD_GRAYSCALE)
 
@@ -255,8 +275,8 @@ def main():
 
     img = convert(img)
 
-    out = high_boost_filter(img)
-    out2 = high_boost_filter(img, k=1.5)
+    out = sobel_x_filter(img)
+    out2 = sobel_y_filter(img)
 
     cv.imshow("Image", img)
     cv.waitKey(0)
