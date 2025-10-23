@@ -275,6 +275,55 @@ def sobel_magnitude_filter(img: np.ndarray):
     # retornando a imagem final
     return new
 
+def scaling(img: np.ndarray, sx: float, sy: float) -> np.ndarray:
+    height, width = img.shape
+    new_height = int(height * sy)
+    new_width = int(width * sx)
+    new = np.zeros((new_height, new_width), dtype=img.dtype)
+
+    for i in range(new_height):
+        for j in range(new_width):
+            orig_x = int(j / sx)
+            orig_y = int(i / sy)
+            orig_x = min(orig_x, width - 1)
+            orig_y = min(orig_y, height - 1)
+            new[i, j] = img[orig_y, orig_x]
+
+    return new
+
+def resize(img: np.ndarray, sx: float, sy: float) -> np.ndarray:
+    # obtendo as dimensoes da imagem
+    img_height, img_width = img.shape
+
+    # calculando os valores de mapeamento
+    x_space = np.linspace(0, img_width - 1, sx * img_width)
+    y_space = np.linspace(0, img_height - 1, sy * img_height)
+    dx, dy = np.meshgrid(x_space, y_space)
+
+    # coordenadas correspondentes na imagem original
+    x0 = np.floor(dx).astype(int)
+    y0 = np.floor(dy).astype(int)
+    x1 = np.clip(x0 + 1, 0, img_width - 1)
+    y1 = np.clip(y0 + 1, 0, img_height - 1)
+
+    # partes fracionarias
+    xf = dx - x0
+    yf = dy - y0
+
+    # obtendo os valores dos pixels vizinhos da imagem original
+    p1 = img[y0, x0]
+    p2 = img[y0, x1]
+    p3 = img[y1, x0]
+    p4 = img[y1, x1]
+
+    # interpolacao bilinear dos valores
+    i1 = p1 * (1 - xf) + p2 * xf
+    i2 = p3 * (1 - xf) + p4 * xf
+    result = i1 * (1 - yf) + i2 * yf
+
+    # retornando a imagem redimensionada
+    return result
+
 def main():
     img = cv.imread("image.jpg", cv.IMREAD_GRAYSCALE)
 
@@ -284,12 +333,23 @@ def main():
 
     img = convert(img)
 
-    out = sobel_magnitude_filter(img)
+    out = resize(img, 2, 2)
 
-    cv.imshow("Image", img)
-    cv.waitKey(0)
-    cv.imshow("Image", out)
-    cv.waitKey(0)
+    plt.subplot(1, 2, 1)
+    plt.title("Original")
+    plt.imshow(img, cmap='gray')
+
+    plt.subplot(1, 2, 2)
+    plt.title("Redimensionada (bilinear)")
+    plt.imshow(out, cmap='gray')
+    plt.show()
+
+    # cv.imshow("Image", img)
+    # cv.waitKey(0)
+    # cv.imshow("Image", out)
+    # cv.waitKey(0)
+
+    # cv.imwrite("output.jpg", deconvert(out))
 
     return 0
 
