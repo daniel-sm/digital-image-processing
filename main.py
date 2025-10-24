@@ -2,6 +2,32 @@ import cv2 as cv
 import numpy as np
 import matplotlib.pyplot as plt
 
+def open_image(path: str) -> np.ndarray:
+    img = cv.imread(path, cv.IMREAD_GRAYSCALE)
+    if img is None:
+        raise FileNotFoundError(f"Could not read the image at path: {path}")
+    return img
+
+def show_image(title: str, img: np.ndarray) -> None:
+    cv.imshow(title, img)
+    cv.waitKey(0)
+    cv.destroyAllWindows()
+
+def compare_images(img1: np.ndarray, img2: np.ndarray) -> None:
+    plt.subplot(1, 2, 1)
+    plt.title("Image 1")
+    plt.imshow(img1, cmap='gray')
+
+    plt.subplot(1, 2, 2)
+    plt.title("Image 2")
+    plt.imshow(img2, cmap='gray')
+    plt.show()
+
+def save_image(path: str, img: np.ndarray) -> None:
+    if img.dtype == np.double:
+        img = deconvert(img)
+    cv.imwrite(path, img)
+
 def convert(img: np.ndarray) -> np.ndarray:
     return img.astype(np.double) / 255
 
@@ -371,32 +397,6 @@ def rotate(img: np.ndarray, angle: float) -> np.ndarray:
     ]
     # retornando a imagem rotacionada
     return new
-
-def show_image(title: str, img: np.ndarray) -> None:
-    cv.imshow(title, img)
-    cv.waitKey(0)
-    cv.destroyAllWindows()
-
-def compare_images(img1: np.ndarray, img2: np.ndarray) -> None:
-    plt.subplot(1, 2, 1)
-    plt.title("Image 1")
-    plt.imshow(img1, cmap='gray')
-
-    plt.subplot(1, 2, 2)
-    plt.title("Image 2")
-    plt.imshow(img2, cmap='gray')
-    plt.show()
-
-def save_image(path: str, img: np.ndarray) -> None:
-    if img.dtype == np.double:
-        img = deconvert(img)
-    cv.imwrite(path, img)
-
-def open_image(path: str) -> np.ndarray:
-    img = cv.imread(path, cv.IMREAD_GRAYSCALE)
-    if img is None:
-        raise FileNotFoundError(f"Could not read the image at path: {path}")
-    return img
 
 def main():
     img = open_image("image.jpg")
