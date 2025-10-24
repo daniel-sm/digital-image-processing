@@ -308,6 +308,70 @@ def scale(img: np.ndarray, sx: float, sy: float) -> np.ndarray:
     # retornando a imagem redimensionada
     return result
 
+def rotate(img: np.ndarray, angle: float) -> np.ndarray:
+    # obtendo as dimensoes da imagem
+    img_height, img_width = img.shape
+
+    # converte angulo para radianos
+    rad_angle = np.deg2rad(angle)
+
+    # calcula seno e cosseno do angulo de rotacao
+    sen = np.sin(-rad_angle)
+    cos = np.cos(-rad_angle)
+    positive_sen = np.sin(rad_angle)
+    positive_cos = np.cos(rad_angle)
+
+    # calculando coordenadas dos cantos apos rotacao
+    # canto superior direito
+    top_right_x = img_width * positive_cos
+    top_right_y = img_width * positive_sen
+    # canto inferior direito
+    bottom_right_x = (img_width * positive_cos) - (img_height * positive_sen)
+    bottom_right_y = (img_width * positive_sen) + (img_height * positive_cos)
+    # canto inferior esquerdo
+    bottom_left_x = -img_height * positive_sen
+    bottom_left_y = img_height * positive_cos
+    
+    # listas de coordenadas x e y dos cantos
+    x_coords = [0, top_right_x, bottom_right_x, bottom_left_x]
+    y_coords = [0, top_right_y, bottom_right_y, bottom_left_y]
+    
+    # calculando os limites da nova imagem
+    x_min = min(x_coords)
+    x_max = max(x_coords)
+    y_min = min(y_coords)
+    y_max = max(y_coords)
+
+    # calculando as dimensoes da imagem rotacionada
+    new_height = round(y_max - y_min)
+    new_width = round(x_max - x_min)
+
+    # criando grade de coordenadas da imagem rotacionada
+    new_y_coords, new_x_coords = np.indices((new_height, new_width))
+
+    # aplicando a transformacao inversa para obter coordenadas na imagem original
+    original_x = ((new_x_coords + x_min) * cos - (new_y_coords + y_min) * sen)
+    original_y = ((new_x_coords + x_min) * sen + (new_y_coords + y_min) * cos)
+    # arrendondando com interpolacao do vizinho mais proximo
+    original_x = np.round(original_x).astype(int)
+    original_y = np.round(original_y).astype(int)
+
+    # criando mascara para pixels dentro dos limites
+    inside_bounds = (
+        (original_x >= 0) & (original_x < img_width) & 
+        (original_y >= 0) & (original_y < img_height)
+    )
+    # criando imagem de saida
+    new = np.zeros((new_height, new_width), dtype=img.dtype)
+    
+    # preenchendo os pixels dentro dos limites
+    new[inside_bounds] = img[
+        original_y[inside_bounds], 
+        original_x[inside_bounds]
+    ]
+    # retornando a imagem rotacionada
+    return new
+
 def show_image(title: str, img: np.ndarray) -> None:
     cv.imshow(title, img)
     cv.waitKey(0)
@@ -337,7 +401,7 @@ def main():
 
     img = convert(img)
 
-    out = scale(img, 2, 2)
+    out = rotate(img, -90)
 
     # compare_images(img, out)
 
