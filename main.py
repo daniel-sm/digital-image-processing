@@ -308,6 +308,26 @@ def scale(img: np.ndarray, sx: float, sy: float) -> np.ndarray:
     # retornando a imagem redimensionada
     return result
 
+def show_image(title: str, img: np.ndarray) -> None:
+    cv.imshow(title, img)
+    cv.waitKey(0)
+    cv.destroyAllWindows()
+
+def compare_images(img1: np.ndarray, img2: np.ndarray) -> None:
+    plt.subplot(1, 2, 1)
+    plt.title("Image 1")
+    plt.imshow(img1, cmap='gray')
+
+    plt.subplot(1, 2, 2)
+    plt.title("Image 2")
+    plt.imshow(img2, cmap='gray')
+    plt.show()
+
+def save_image(path: str, img: np.ndarray) -> None:
+    if img.dtype == np.double:
+        img = deconvert(img)
+    cv.imwrite(path, img)
+
 def main():
     img = cv.imread("image.jpg", cv.IMREAD_GRAYSCALE)
 
@@ -319,21 +339,12 @@ def main():
 
     out = scale(img, 2, 2)
 
-    plt.subplot(1, 2, 1)
-    plt.title("Original")
-    plt.imshow(img, cmap='gray')
+    # compare_images(img, out)
 
-    plt.subplot(1, 2, 2)
-    plt.title("Resultado")
-    plt.imshow(out, cmap='gray')
-    plt.show()
+    show_image("image", img)
+    show_image("output", out)
 
-    # cv.imshow("Image", img)
-    # cv.waitKey(0)
-    # cv.imshow("Image", out)
-    # cv.waitKey(0)
-
-    # cv.imwrite("output.jpg", deconvert(out))
+    # save_image("output.jpg", out)
 
     return 0
 
