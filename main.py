@@ -392,16 +392,18 @@ def save_image(path: str, img: np.ndarray) -> None:
         img = deconvert(img)
     cv.imwrite(path, img)
 
+def open_image(path: str) -> np.ndarray:
+    img = cv.imread(path, cv.IMREAD_GRAYSCALE)
+    if img is None:
+        raise FileNotFoundError(f"Could not read the image at path: {path}")
+    return img
+
 def main():
-    img = cv.imread("image.jpg", cv.IMREAD_GRAYSCALE)
+    img = open_image("image.jpg")
 
-    if (img is None):
-        print("Could not read the image!")
-        return 0
+    # img = convert(img)
 
-    img = convert(img)
-
-    out = rotate(img, -90)
+    out = rotate(img, 10)
 
     # compare_images(img, out)
 
