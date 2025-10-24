@@ -275,23 +275,7 @@ def sobel_magnitude_filter(img: np.ndarray):
     # retornando a imagem final
     return new
 
-def scaling(img: np.ndarray, sx: float, sy: float) -> np.ndarray:
-    height, width = img.shape
-    new_height = int(height * sy)
-    new_width = int(width * sx)
-    new = np.zeros((new_height, new_width), dtype=img.dtype)
-
-    for i in range(new_height):
-        for j in range(new_width):
-            orig_x = int(j / sx)
-            orig_y = int(i / sy)
-            orig_x = min(orig_x, width - 1)
-            orig_y = min(orig_y, height - 1)
-            new[i, j] = img[orig_y, orig_x]
-
-    return new
-
-def resize(img: np.ndarray, sx: float, sy: float) -> np.ndarray:
+def scale(img: np.ndarray, sx: float, sy: float) -> np.ndarray:
     # obtendo as dimensoes da imagem
     img_height, img_width = img.shape
 
@@ -333,14 +317,14 @@ def main():
 
     img = convert(img)
 
-    out = resize(img, 2, 2)
+    out = scale(img, 2, 2)
 
     plt.subplot(1, 2, 1)
     plt.title("Original")
     plt.imshow(img, cmap='gray')
 
     plt.subplot(1, 2, 2)
-    plt.title("Redimensionada (bilinear)")
+    plt.title("Resultado")
     plt.imshow(out, cmap='gray')
     plt.show()
 
