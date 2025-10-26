@@ -477,22 +477,19 @@ def shift_fourier(fourier: np.ndarray) -> np.ndarray:
     # retornando a transformada deslocada
     return shifted
 
-def fast_fourier_transform(img: np.ndarray) -> np.ndarray:
-    pass
-
 def main():
     img = open_image("image.jpg")
+    show_image("image", img)
 
     img = convert(img)
 
-    out = fourier_transform(img)
+    out = shift_fourier(fourier_transform(img))
+    show_image("output", 1000 * np.real(out)/np.max(np.real(out)))
 
-    out = shift_fourier(out)
+    inv = inverse_fourier_transform(shift_fourier(out))
+    show_image("inverse", inv)
 
-    # compare_images(img, out)
-
-    show_image("image", img)
-    show_image("output", out)
+    compare_images(img, inv)
 
     # save_image("output.jpg", out)
 
