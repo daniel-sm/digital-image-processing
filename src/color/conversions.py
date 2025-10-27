@@ -75,7 +75,7 @@ def hsi_to_rgb(hsi: np.ndarray) -> np.ndarray:
     rgb = np.stack((R, G, B), axis=-1)
 
     # retornando imagem
-    return rgb
+    return np.clip(rgb, 0, 1)
 
 def rgb_to_hsv(rgb: np.ndarray) -> np.ndarray:
     # isolando canais rgb

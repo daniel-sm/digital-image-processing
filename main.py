@@ -1,24 +1,24 @@
 import numpy as np
 
-from src.color.conversions import rgb_to_gray, rgb_to_gray_average
-from src.image.handle import compare_images, convert, deconvert, open_image, save_image, show_image
+from src.color.operations import colored_histogram, colored_histogram_equalization, plot_colored_histogram
+from src.image.handle import compare_images, to_double, to_byte, open_image, save_image, show_image
 
 def main():
     img = open_image("image.jpg")
     show_image("image", img)
 
-    img = convert(img)
+    img = to_double(img)
+    print("IMG", img.shape, img.dtype, np.min(img), np.max(img))
 
-    print(img.shape, img.dtype, np.min(img), np.max(img))
+    out = colored_histogram_equalization(img)
+    print("OUT", out.shape, out.dtype, np.min(out), np.max(out))
 
-    out = rgb_to_gray(img)
-    out1 = rgb_to_gray_average(img)
+    show_image("OUT", to_byte(out))
 
-    print(out.shape, out.dtype, np.min(out), np.max(out))
+    plot_colored_histogram(colored_histogram(img))
+    plot_colored_histogram(colored_histogram(out))
 
-    compare_images(out, out1)
-
-    # save_image("output.jpg", out)
+    compare_images(img, out)
 
     return 0
 

@@ -2,25 +2,34 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def histogram(img: np.ndarray) -> np.ndarray:
+    # calculando o histograma da imagem
     hist = np.bincount(img.ravel(), minlength=256)
-    # hist = np.zeros(shape=256, dtype=int)
-    # for pixel in np.nditer(img):
-    #     hist[pixel] += 1
+    # retornando o histograma
     return hist
 
 def plot_histogram(hist: np.array) -> None:
-    fig, ax = plt.subplots()
-    ax.plot(hist)
-    # ax.set_xlim(0, 255)
-    # ax.set_ylim(0)
-    # ax.set_xticks(np.arange(0, 256, 10), minor=True)
+    # plotando o histograma
+    plt.plot(hist)
+    # configurando o grafico
+    plt.title("Histogram")
+    plt.xlim(0, 255)
+    plt.ylim(0)
+    plt.xticks(np.arange(0, 256, 10), minor=True)
+    # mostrando o grafico
     plt.show()
 
 def histogram_equalization(img: np.ndarray) -> np.ndarray:
+    # calculando o histograma
     hist = histogram(img)
-
+    # calculando a porbabilidade
     prob = hist / img.size
+    # calculando a distribuicao acumulada
     dist = np.cumsum(prob)
+    # mapeando os valores de 0 a 255
     result = np.round(dist * 255).astype(np.uint8)
 
-    return result[img]
+    # ajustando os pixels da imagem de acordo com o mapeamento
+    new = result[img]
+
+    # retornando a imagem equalizada
+    return new
