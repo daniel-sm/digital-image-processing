@@ -1,5 +1,22 @@
 import numpy as np
 
+def rgb_to_gray(rgb: np.ndarray) -> np.ndarray:
+    # coeficientes de luminancia
+    r_coeficcient, g_coeficcient, b_coeficcient = 0.299, 0.587, 0.114
+
+    # calculando escala de cinza
+    gray = (r_coeficcient * rgb[..., 0]) + (g_coeficcient * rgb[..., 1]) + (b_coeficcient * rgb[..., 2])
+
+    # retornando imagem em escala de cinza
+    return gray
+
+def rgb_to_gray_average(rgb: np.ndarray) -> np.ndarray:
+    # calculando escala de cinza pela media dos canais
+    gray = np.mean(rgb, axis=-1)
+
+    # retornando imagem em escala de cinza
+    return gray
+
 def rgb_to_hsi(rgb: np.ndarray) -> np.ndarray:
     # isolando canais rgb
     R, G, B = rgb[..., 0], rgb[..., 1], rgb[..., 2]
