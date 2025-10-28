@@ -1,9 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from src.color_conversions import hsi_to_rgb, rgb_to_hsi
-from src.histogram import histogram, histogram_equalization
-from src.image_handler import to_byte, to_double
+from core.color_conversions import hsi_to_rgb, rgb_to_hsi
+from core.histogram import histogram, histogram_equalization
+from core.image_handler import to_byte, to_double
 
 def colored_histogram(img: np.ndarray) -> np.ndarray:
     # convertendo a imagem para double
