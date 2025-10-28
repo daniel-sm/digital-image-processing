@@ -60,3 +60,15 @@ def shift_fourier(fourier: np.ndarray) -> np.ndarray:
 
     # retornando a transformada deslocada
     return shifted
+
+def fast_fourier_transform(img: np.ndarray) -> np.ndarray:
+    # aplicando a transformada rapida de fourier
+    return np.fft.fft2(img)
+
+def inverse_fast_fourier_transform(fourier: np.ndarray) -> np.ndarray:
+    # aplicando a transformada inversa rapida de fourier
+    return np.fft.ifft2(fourier)
+
+def shift_fast_fourier(fourier: np.ndarray) -> np.ndarray:
+    # aplicando o deslocamento da transformada rapida de fourier
+    return np.fft.fftshift(fourier)
