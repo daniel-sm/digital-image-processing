@@ -1,7 +1,7 @@
 import numpy as np
 
-from src.color.operations import colored_histogram, colored_histogram_equalization, plot_colored_histogram
-from src.image.handle import compare_images, to_double, to_byte, open_image, save_image, show_image
+from src.colored_operations import colored_histogram, colored_histogram_equalization, plot_colored_histogram
+from src.image_handler import compare_images, to_double, to_byte, open_image, save_image, show_image
 
 def main():
     img = open_image("image.jpg")
