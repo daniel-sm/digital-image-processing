@@ -1,6 +1,6 @@
 import numpy as np
 
-from core.colored_operations import sepia
+from core.colored_operations import plot_intensity_histogram, intensity_histogram
 from core.image_handler import compare_images, to_double, to_byte, open_image, save_image, show_image
 
 def main():
@@ -8,14 +8,15 @@ def main():
     show_image("image", img)
 
     img = to_double(img)
-    print("IMG", img.shape, img.dtype, np.min(img), np.max(img))
+    # print("IMG", img.shape, img.dtype, np.min(img), np.max(img))
 
-    out = sepia(img)
-    print("OUT", out.shape, out.dtype, np.min(out), np.max(out))
+    plot_intensity_histogram(intensity_histogram(img))
 
-    show_image("OUT", to_byte(out))
+    out = None
+    # print("OUT", out.shape, out.dtype, np.min(out), np.max(out))
 
-    compare_images(img, out)
+    # show_image("OUT", to_byte(out))
+    # compare_images(img, out)
 
     return 0
 

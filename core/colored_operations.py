@@ -49,6 +49,30 @@ def colored_histogram_equalization(rgb: np.ndarray) -> np.ndarray:
     # retornando a imagem equalizada
     return new
 
+def intensity_histogram(rgb: np.ndarray) -> np.ndarray:
+    # convertendo para hsi
+    hsi = rgb_to_hsi(rgb)
+
+    # isolando o canal de intensidade
+    intensity = to_byte(hsi[..., 2])
+
+    # calculando o histograma de intensidade
+    hist = histogram(intensity)
+
+    # retornando o histograma de intensidade
+    return hist
+
+def plot_intensity_histogram(hist: np.ndarray) -> None:
+    # plotando o histograma de intensidade
+    plt.plot(hist, color='k')
+    # configurando o grafico
+    plt.title("Intensity Histogram")
+    plt.xlim(0, 255)
+    plt.ylim(0)
+    plt.xticks(np.arange(0, 256, 10), minor=True)
+    # mostrando o grafico
+    plt.show()
+
 def adjust_hsi(hsi: np.ndarray, h: float, s: float, i: float) -> np.ndarray:
     # ajustando o matiz
     hsi[..., 0] = (hsi[..., 0] * h) % 1.0

@@ -7,9 +7,9 @@ def histogram(img: np.ndarray) -> np.ndarray:
     # retornando o histograma
     return hist
 
-def plot_histogram(histogram: np.array) -> None:
+def plot_histogram(hist: np.array) -> None:
     # plotando o histograma
-    plt.plot(histogram)
+    plt.plot(hist)
     # configurando o grafico
     plt.title("Histogram")
     plt.xlim(0, 255)
