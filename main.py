@@ -1,6 +1,6 @@
 import numpy as np
 
-from core.colored_operations import colored_histogram, colored_histogram_equalization, plot_colored_histogram
+from core.colored_operations import sepia
 from core.image_handler import compare_images, to_double, to_byte, open_image, save_image, show_image
 
 def main():
@@ -10,13 +10,10 @@ def main():
     img = to_double(img)
     print("IMG", img.shape, img.dtype, np.min(img), np.max(img))
 
-    out = colored_histogram_equalization(img)
+    out = sepia(img)
     print("OUT", out.shape, out.dtype, np.min(out), np.max(out))
 
     show_image("OUT", to_byte(out))
-
-    plot_colored_histogram(colored_histogram(img))
-    plot_colored_histogram(colored_histogram(out))
 
     compare_images(img, out)
 

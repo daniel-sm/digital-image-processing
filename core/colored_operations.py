@@ -17,13 +17,13 @@ def colored_histogram(rgb: np.ndarray) -> np.ndarray:
     # retornando o histograma colorido
     return np.array([r_hist, g_hist, b_hist])
 
-def plot_colored_histogram(hist: np.ndarray) -> None:
+def plot_colored_histogram(histogram: np.ndarray) -> None:
     # definindo as cores
     colors = ['r', 'g', 'b']
     # plotando o histograma colorido
     for i in range(3):
         # plotando o histograma de cada canal
-        plt.plot(hist[i], color=colors[i])
+        plt.plot(histogram[i], color=colors[i])
     # configurando o grafico
     plt.title("Colored Histogram")
     plt.xlim(0, 255)
@@ -51,7 +51,7 @@ def colored_histogram_equalization(rgb: np.ndarray) -> np.ndarray:
 
 def adjust_hsi(hsi: np.ndarray, h: float, s: float, i: float) -> np.ndarray:
     # ajustando o matiz
-    hsi[..., 0] = (hsi[..., 0] * h) % 360
+    hsi[..., 0] = (hsi[..., 0] * h) % 1.0
 
     # ajustando a saturacao
     hsi[..., 1] = np.clip(hsi[..., 1] * s, 0, 1)
@@ -64,7 +64,7 @@ def adjust_hsi(hsi: np.ndarray, h: float, s: float, i: float) -> np.ndarray:
 
 def adjust_hsv(hsv: np.ndarray, h: float, s: float, v: float) -> np.ndarray:
     # ajustando o matiz
-    hsv[..., 0] = (hsv[..., 0] * h) % 360
+    hsv[..., 0] = (hsv[..., 0] * h) % 1.0
 
     # ajustando a saturacao
     hsv[..., 1] = np.clip(hsv[..., 1] * s, 0, 1)

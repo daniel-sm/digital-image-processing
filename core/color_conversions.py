@@ -2,18 +2,15 @@ import numpy as np
 
 def rgb_to_gray(rgb: np.ndarray) -> np.ndarray:
     # coeficientes de luminancia
-    r_coeficcient, g_coeficcient, b_coeficcient = 0.299, 0.587, 0.114
-
+    r, g, b = 0.299, 0.587, 0.114
     # calculando escala de cinza
-    gray = (r_coeficcient * rgb[..., 0]) + (g_coeficcient * rgb[..., 1]) + (b_coeficcient * rgb[..., 2])
-
+    gray = (r * rgb[..., 0]) + (g * rgb[..., 1]) + (b * rgb[..., 2])
     # retornando imagem em escala de cinza
     return gray
 
 def rgb_to_gray_average(rgb: np.ndarray) -> np.ndarray:
     # calculando escala de cinza pela media dos canais
     gray = np.mean(rgb, axis=-1)
-
     # retornando imagem em escala de cinza
     return gray
 
@@ -37,7 +34,16 @@ def rgb_to_hsi(rgb: np.ndarray) -> np.ndarray:
     theta = np.degrees(np.arccos(num / (2 * den)))
     H = np.where(B <= G, theta, 360 - theta)
 
-    return np.stack((H, S, I), axis=-1)
+    # normalizando valores entre 0 e 1
+    H = (H / 360.0) % 1.0
+    S = np.clip(S, 0, 1)
+    I = np.clip(I, 0, 1)
+
+    # montando imagem hsi
+    hsi = np.stack((H, S, I), axis=-1)
+
+    # retornando imagem convertida
+    return hsi
 
 def hsi_to_rgb(hsi: np.ndarray) -> np.ndarray:
     # isolando canais hsi
@@ -47,6 +53,9 @@ def hsi_to_rgb(hsi: np.ndarray) -> np.ndarray:
     R = np.zeros_like(H)
     G = np.zeros_like(H)
     B = np.zeros_like(H)
+
+    # ajustando matiz para o intervalo [0, 360)
+    H = (H * 360) % 360
 
     # convertendo graus para radianos
     H_radians = np.radians(H)
@@ -73,9 +82,11 @@ def hsi_to_rgb(hsi: np.ndarray) -> np.ndarray:
 
     # montando imagem
     rgb = np.stack((R, G, B), axis=-1)
+    # clipando valores entre 0 e 1
+    rgb = np.clip(rgb, 0, 1)
 
     # retornando imagem
-    return np.clip(rgb, 0, 1)
+    return rgb
 
 def rgb_to_hsv(rgb: np.ndarray) -> np.ndarray:
     # isolando canais rgb
@@ -116,6 +127,11 @@ def rgb_to_hsv(rgb: np.ndarray) -> np.ndarray:
     # calculando valor
     V = c_max
 
+    # normalizando valores entre 0 e 1
+    H = (H / 360.0) % 1.0
+    S = np.clip(S, 0, 1)
+    V = np.clip(V, 0, 1)
+
     # montando imagem hsv
     hsv = np.stack((H, S, V), axis=-1)
 
@@ -125,6 +141,9 @@ def rgb_to_hsv(rgb: np.ndarray) -> np.ndarray:
 def hsv_to_rgb(hsv: np.ndarray) -> np.ndarray:
     # isolando canais hsv
     H, S, V = hsv[..., 0], hsv[..., 1], hsv[..., 2]
+
+    # retornando matiz para o intervalo [0, 360)
+    H = (H * 360) % 360
 
     # calculando componentes intermediarias
     C = V * S
