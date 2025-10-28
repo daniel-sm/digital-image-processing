@@ -5,14 +5,14 @@ from core.color_conversions import hsi_to_rgb, rgb_to_hsi
 from core.histogram import histogram, histogram_equalization
 from core.image_handler import to_byte, to_double
 
-def colored_histogram(img: np.ndarray) -> np.ndarray:
+def colored_histogram(rgb: np.ndarray) -> np.ndarray:
     # convertendo a imagem para double
-    img = to_byte(img)
+    rgb = to_byte(rgb)
 
     # calculando o histograma para cada canal
-    r_hist = histogram(img[..., 0])
-    g_hist = histogram(img[..., 1])
-    b_hist = histogram(img[..., 2])
+    r_hist = histogram(rgb[..., 0])
+    g_hist = histogram(rgb[..., 1])
+    b_hist = histogram(rgb[..., 2])
 
     # retornando o histograma colorido
     return np.array([r_hist, g_hist, b_hist])
@@ -32,9 +32,9 @@ def plot_colored_histogram(hist: np.ndarray) -> None:
     # mostrando o grafico
     plt.show()
 
-def colored_histogram_equalization(img: np.ndarray) -> np.ndarray:
+def colored_histogram_equalization(rgb: np.ndarray) -> np.ndarray:
     # convertendo imagem para hsi
-    hsi = rgb_to_hsi(img)
+    hsi = rgb_to_hsi(rgb)
 
     # isolando o canal de intensidade
     intensity = to_byte(hsi[..., 2])
@@ -87,3 +87,17 @@ def adjust_rgb(rgb: np.ndarray, r: float, g: float, b: float) -> np.ndarray:
 
     # retornando a imagem ajustada
     return rgb
+
+def sepia(rgb: np.ndarray) -> np.ndarray:
+    # definindo a matriz de filtro sepia
+    sepia_matrix = np.array([[0.393, 0.769, 0.189],
+                             [0.349, 0.686, 0.168],
+                             [0.272, 0.534, 0.131]])
+    
+    # aplicando o filtro sepia
+    sepia = rgb @ sepia_matrix.T
+    
+    # cortando os valores para o intervalo [0, 1]
+    sepia = np.clip(sepia, 0, 1)
+    
+    return sepia
