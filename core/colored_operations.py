@@ -13,6 +13,7 @@ from core.convolution_operations import (
     median_filter,
     gaussian_filter,
     laplacian_filter,
+    sobel_magnitude_filter
 )
 
 def colored_histogram(rgb: np.ndarray) -> np.ndarray:
@@ -206,3 +207,13 @@ def rgb_sobel_y(img: np.ndarray) -> np.ndarray:
 
     # retornando a imagem filtrada
     return sobel_y
+
+def rgb_magnitude_gradient(img: np.ndarray) -> np.ndarray:
+    # convertendo para hsi
+    hsi = rgb_to_hsi(img)
+
+    # calculando a magnitude do gradiente no canal de intensidade
+    magnitude = sobel_magnitude_filter(hsi[..., 2])
+
+    # retornando a imagem filtrada
+    return magnitude

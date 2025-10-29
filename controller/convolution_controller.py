@@ -21,7 +21,8 @@ from core.colored_operations import (
     rgb_laplacian_filter,
     generic_filter,
     rgb_sobel_x,
-    rgb_sobel_y
+    rgb_sobel_y,
+    rgb_magnitude_gradient,
 )
 from controller.image_controller import update_image
 from core.image_handler import to_byte, to_double
@@ -222,3 +223,10 @@ class ConvolutionController:
         img = to_double(self.main_window.original_image)
         filtered = rgb_sobel_y(img)
         update_image(self.main_window, to_byte(filtered))
+
+    def apply_magnitude_gradient(self):
+        if not self._check_image():
+            return
+        img = to_double(self.main_window.original_image)
+        magnitude = rgb_magnitude_gradient(img)
+        update_image(self.main_window, to_byte(magnitude))

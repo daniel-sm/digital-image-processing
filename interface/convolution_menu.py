@@ -41,3 +41,7 @@ class ConvolutionMenu(QMenu):
         sobel_y = QAction("Sobel Filter - Y", self)
         sobel_y.triggered.connect(convolution_controller.apply_sobel_y)
         self.addAction(sobel_y)
+
+        magnitude = QAction("Magnitude - Gradient", self)
+        magnitude.triggered.connect(convolution_controller.apply_magnitude_gradient)
+        self.addAction(magnitude)
