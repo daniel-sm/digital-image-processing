@@ -74,21 +74,21 @@ class ColorController:
             panel.add_widget(slider)
 
     def open_adjust_hsv_panel(self):
-        if self.main_window.current_image is None:
+        if self.main_window.original_image is None:
             QMessageBox.warning(self.main_window, "Erro", "Nenhuma imagem aberta.")
             return
 
         self._setup_sliders(["Hue", "Saturation", "Value"], self._apply_hsv_adjust)
 
     def open_adjust_hsi_panel(self):
-        if self.main_window.current_image is None:
+        if self.main_window.original_image is None:
             QMessageBox.warning(self.main_window, "Erro", "Nenhuma imagem aberta.")
             return
 
         self._setup_sliders(["Hue", "Saturation", "Intensity"], self._apply_hsi_adjust)
 
     def open_adjust_rgb_panel(self):
-        if self.main_window.current_image is None:
+        if self.main_window.original_image is None:
             QMessageBox.warning(self.main_window, "Erro", "Nenhuma imagem aberta.")
             return
 

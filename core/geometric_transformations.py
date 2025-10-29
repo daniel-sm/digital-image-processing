@@ -5,8 +5,8 @@ def scale(img: np.ndarray, sx: float, sy: float) -> np.ndarray:
     img_height, img_width = img.shape
 
     # calculando os valores de mapeamento
-    x_space = np.linspace(0, img_width - 1, sx * img_width)
-    y_space = np.linspace(0, img_height - 1, sy * img_height)
+    x_space = np.linspace(0, img_width - 1, int(sx * img_width))
+    y_space = np.linspace(0, img_height - 1, int(sy * img_height))
     x, y = np.meshgrid(x_space, y_space)
 
     # coordenadas correspondentes na imagem original
@@ -114,3 +114,35 @@ def rotate(img: np.ndarray, angle: float) -> np.ndarray:
 
     # retornando a imagem interpolada
     return result.astype(img.dtype)
+
+def scale_rgb(img: np.ndarray, sx: float, sy: float) -> np.ndarray:
+    # separando os canais de cor
+    R = img[:, :, 0]
+    G = img[:, :, 1]
+    B = img[:, :, 2]
+
+    # aplicando escala em cada canal
+    r_scaled = scale(R, sx, sy)
+    g_scaled = scale(G, sx, sy)
+    b_scaled = scale(B, sx, sy)
+
+    # recombinando os canais em uma imagem RGB
+    result = np.stack((r_scaled, g_scaled, b_scaled), axis=-1)
+
+    return result
+
+def rotate_rgb(img: np.ndarray, angle: float) -> np.ndarray:
+    # separando os canais de cor
+    R = img[:, :, 0]
+    G = img[:, :, 1]
+    B = img[:, :, 2]
+
+    # aplicando rotacao em cada canal
+    r_rotated = rotate(R, angle)
+    g_rotated = rotate(G, angle)
+    b_rotated = rotate(B, angle)
+
+    # recombinando os canais em uma imagem RGB
+    result = np.stack((r_rotated, g_rotated, b_rotated), axis=-1)
+
+    return result

@@ -5,6 +5,7 @@ from controller.file_controller import FileController
 from controller.filter_controller import FilterController
 from controller.histogram_controller import HistogramController
 from controller.color_controller import ColorController
+from controller.geometric_controller import GeometricController
 
 class MenuBar(QMenuBar):
     def __init__(self, main_window):
@@ -16,6 +17,7 @@ class MenuBar(QMenuBar):
         self.filter_controller = FilterController(main_window)
         self.histogram_controller = HistogramController(main_window)
         self.color_controller = ColorController(main_window)
+        self.geometric_controller = GeometricController(main_window)
 
         # criando os menus
         self._create_menus()
@@ -110,7 +112,18 @@ class MenuBar(QMenuBar):
 
         color_menu.addSeparator()
 
-        # configurando menu de ajuda
+        # configurando menu GEOMETRIC
+        geometric_menu = self.addMenu("Geometric")
+
+        scale_action = QAction("Scale", self)
+        scale_action.triggered.connect(self.geometric_controller.open_scale_panel)
+        geometric_menu.addAction(scale_action)
+
+        rotate_action = QAction("Rotate", self)
+        rotate_action.triggered.connect(self.geometric_controller.open_rotate_panel)
+        geometric_menu.addAction(rotate_action)
+
+        # configurando menu HELP
         help_menu = self.addMenu("Help")
         help_menu.addAction(QAction("Documentation", self))
         help_menu.addAction(QAction("About", self))
