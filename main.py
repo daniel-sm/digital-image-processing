@@ -1,24 +1,14 @@
-import numpy as np
+from PySide6.QtWidgets import QApplication
 
-from core.colored_operations import plot_intensity_histogram, intensity_histogram
-from core.image_handler import compare_images, to_double, to_byte, open_image, save_image, show_image
+from interface.main_window import MainWindow
 
 def main():
-    img = open_image("image.jpg")
-    show_image("image", img)
+    app = QApplication([])
 
-    img = to_double(img)
-    # print("IMG", img.shape, img.dtype, np.min(img), np.max(img))
+    window = MainWindow()
+    window.show()
 
-    plot_intensity_histogram(intensity_histogram(img))
-
-    out = None
-    # print("OUT", out.shape, out.dtype, np.min(out), np.max(out))
-
-    # show_image("OUT", to_byte(out))
-    # compare_images(img, out)
-
-    return 0
+    app.exec()
 
 if __name__ == "__main__":
     main()
