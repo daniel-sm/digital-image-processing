@@ -1,5 +1,6 @@
-from PySide6.QtWidgets import QMainWindow, QMenuBar
-from PySide6.QtGui import QAction
+from PySide6.QtWidgets import QMainWindow, QMenuBar, QLabel, QScrollArea
+from PySide6.QtGui import QAction, QPixmap
+from PySide6.QtCore import Qt
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -12,6 +13,9 @@ class MainWindow(QMainWindow):
 
         # criando o menu bar
         self._create_menu_bar()
+
+        # criando a area de visualização da imagem
+        self._create_image_viewer()
 
     def _create_menu_bar(self):
         menu_bar = QMenuBar(self)
@@ -45,3 +49,28 @@ class MainWindow(QMainWindow):
         help_menu = menu_bar.addMenu("Help")
         help_menu.addAction(QAction("Documentation", self))
         help_menu.addAction(QAction("About", self))
+
+    def _create_image_viewer(self):
+        # criando o label que vai exibir a imagem
+        self.image_label = QLabel()
+        self.image_label.setAlignment(Qt.AlignCenter)
+
+        # carregando uma imagem de exemplo
+        pixmap = QPixmap("image.jpg")
+
+        # ajustando o pixmap ao label
+        self.image_label.setPixmap(pixmap)
+        self.image_label.setPixmap(pixmap.scaled(
+            self.width(), 
+            self.height(), 
+            Qt.KeepAspectRatio, 
+            Qt.SmoothTransformation
+        ))
+
+        # adicionando o label a um scroll area
+        # scroll_area = QScrollArea()
+        # scroll_area.setWidget(self.image_label)
+        # scroll_area.setAlignment(Qt.AlignCenter)
+        # self.setCentralWidget(scroll_area)
+
+        self.setCentralWidget(self.image_label)
