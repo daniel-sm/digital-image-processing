@@ -84,31 +84,31 @@ class MenuBar(QMenuBar):
         # configurando menu COLORS
         color_menu = self.addMenu("Color")
 
-        adjust_rgb_action = QAction("Adjust RGB", self)
-        adjust_rgb_action.triggered.connect(self.color_controller.adjust_rgb)
-        color_menu.addAction(adjust_rgb_action)
-
         adjust_hsv_action = QAction("Adjust HSV", self)
-        adjust_hsv_action.triggered.connect(self.color_controller.adjust_hsv)
+        adjust_hsv_action.triggered.connect(self.color_controller.open_adjust_hsv_panel)
         color_menu.addAction(adjust_hsv_action)
 
         adjust_hsi_action = QAction("Adjust HSI", self)
-        adjust_hsi_action.triggered.connect(self.color_controller.adjust_hsi)
+        adjust_hsi_action.triggered.connect(self.color_controller.open_adjust_hsi_panel)
         color_menu.addAction(adjust_hsi_action)
+
+        adjust_rgb_action = QAction("Adjust RGB", self)
+        adjust_rgb_action.triggered.connect(self.color_controller.open_adjust_rgb_panel)
+        color_menu.addAction(adjust_rgb_action)
 
         color_menu.addSeparator()
 
-        grayscale_submenu = QMenu("Convert to Grayscale", self)
+        grayscale_menu = color_menu.addMenu("Grayscale")
 
-        simple_mean_action = QAction("Simple Mean", self)
-        simple_mean_action.triggered.connect(self.color_controller.convert_to_grayscale_simple_mean)
-        grayscale_submenu.addAction(simple_mean_action)
+        gray_simple_action = QAction("Simple Mean", self)
+        gray_simple_action.triggered.connect(self.color_controller.convert_to_grayscale_simple_mean)
+        grayscale_menu.addAction(gray_simple_action)
 
-        weighted_mean_action = QAction("Weighted Mean", self)
-        weighted_mean_action.triggered.connect(self.color_controller.convert_to_grayscale_weighted_mean)
-        grayscale_submenu.addAction(weighted_mean_action)
+        gray_weighted_action = QAction("Weighted Mean", self)
+        gray_weighted_action.triggered.connect(self.color_controller.convert_to_grayscale_weighted_mean)
+        grayscale_menu.addAction(gray_weighted_action)
 
-        color_menu.addMenu(grayscale_submenu)
+        color_menu.addSeparator()
 
         # configurando menu de ajuda
         help_menu = self.addMenu("Help")

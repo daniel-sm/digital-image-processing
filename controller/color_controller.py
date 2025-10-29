@@ -1,23 +1,25 @@
-from PySide6.QtWidgets import QMainWindow, QMessageBox
-from core.color_conversions import rgb_to_gray_average, rgb_to_gray
-from core.image_handler import to_byte, to_double
-from controller.image_controller import update_image
+from PySide6.QtWidgets import QMainWindow, QMessageBox, QSlider, QLabel
+from PySide6.QtCore import Qt
 
+from core.color_conversions import (
+    rgb_to_gray_average, 
+    rgb_to_gray,
+    rgb_to_hsv,
+    hsv_to_rgb,
+    rgb_to_hsi,
+    hsi_to_rgb,
+)
+from core.colored_operations import (
+    adjust_hsi,
+    adjust_hsv,
+    adjust_rgb,
+)
 from core.image_handler import to_byte, to_double
 from controller.image_controller import update_image
 
 class ColorController:
     def __init__(self, main_window: QMainWindow):
         self.main_window = main_window
-
-    def adjust_rgb(self):
-        pass
-
-    def adjust_hsv(self):
-        pass
-
-    def adjust_hsi(self):
-        pass
 
     def convert_to_grayscale_simple_mean(self):
         if self.main_window.current_image is None:
@@ -53,24 +55,79 @@ class ColorController:
         # atualiza a imagem no painel
         update_image(self.main_window, img_byte)
 
-    # def show_histogram(self):
-    #     if self.main_window.current_image is None:
-    #         QMessageBox.warning(self.main_window, "Erro", "Nenhuma imagem aberta.")
-    #         return
-    #     # mostrando histograma colorido
-    #     plot_colored_histogram(colored_histogram(self.main_window.current_image))
+    def _setup_sliders(self, channels, apply_callback):
+        panel = self.main_window.side_panel
 
-    # def show_intensity_histogram(self):
-    #     if self.main_window.current_image is None:
-    #         QMessageBox.warning(self.main_window, "Erro", "Nenhuma imagem aberta.")
-    #         return
-    #     # mostrando histograma de intensidade
-    #     plot_intensity_histogram(intensity_histogram(to_double(self.main_window.current_image)))
+        # limpa o painel antes de adicionar novos controles
+        panel.clear_panel()
+        
+        for ch in channels:
+            label = QLabel(f"{ch} Channel")
+            slider = QSlider(Qt.Horizontal)
+            slider.setMinimum(1)
+            slider.setMaximum(100)
+            slider.setValue(50)
+            slider.valueChanged.connect(lambda value, c=ch: apply_callback(c, value))
+            
+            # adiciona os widgets via add_widget para respeitar botão Close
+            panel.add_widget(label)
+            panel.add_widget(slider)
 
-    # def apply_histogram_equalization(self):
-    #     if self.main_window.current_image is None:
-    #         QMessageBox.warning(self.main_window, "Erro", "Nenhuma imagem aberta.")
-    #         return
-    #     # aplicando equalização de histograma
-    #     img_array = to_byte(colored_histogram_equalization(to_double(self.main_window.current_image)))
-    #     update_image(self.main_window, img_array)
+    def open_adjust_hsv_panel(self):
+        if self.main_window.current_image is None:
+            QMessageBox.warning(self.main_window, "Erro", "Nenhuma imagem aberta.")
+            return
+
+        self._setup_sliders(["Hue", "Saturation", "Value"], self._apply_hsv_adjust)
+
+    def open_adjust_hsi_panel(self):
+        if self.main_window.current_image is None:
+            QMessageBox.warning(self.main_window, "Erro", "Nenhuma imagem aberta.")
+            return
+
+        self._setup_sliders(["Hue", "Saturation", "Intensity"], self._apply_hsi_adjust)
+
+    def open_adjust_rgb_panel(self):
+        if self.main_window.current_image is None:
+            QMessageBox.warning(self.main_window, "Erro", "Nenhuma imagem aberta.")
+            return
+
+        self._setup_sliders(["Red", "Green", "Blue"], self._apply_rgb_adjust)
+
+    def _apply_hsv_adjust(self, channel, value):
+        if self.main_window.original_image is None:
+            return
+        hsv = rgb_to_hsv(to_double(self.main_window.original_image))
+        h, s, v = 1.0, 1.0, 1.0
+        scale = value / 50
+        if channel == "Hue": h = scale
+        elif channel == "Saturation": s = scale
+        elif channel == "Value": v = scale
+        result = adjust_hsv(hsv, h, s, v)
+        rgb = to_byte(hsv_to_rgb(result))
+        update_image(self.main_window, rgb)
+
+    def _apply_hsi_adjust(self, channel, value):
+        if self.main_window.original_image is None:
+            return
+        hsi = rgb_to_hsi(to_double(self.main_window.original_image))
+        h, s, i = 1.0, 1.0, 1.0
+        scale = value / 50
+        if channel == "Hue": h = scale
+        elif channel == "Saturation": s = scale
+        elif channel == "Intensity": i = scale
+        result = adjust_hsi(hsi, h, s, i)
+        rgb = to_byte(hsi_to_rgb(result))
+        update_image(self.main_window, rgb)
+
+    def _apply_rgb_adjust(self, channel, value):
+        if self.main_window.original_image is None:
+            return
+        img = to_double(self.main_window.original_image)
+        r, g, b = 1.0, 1.0, 1.0
+        scale = value / 50
+        if channel == "Red": r = scale
+        elif channel == "Green": g = scale
+        elif channel == "Blue": b = scale
+        result = to_byte(adjust_rgb(img, r, g, b))
+        update_image(self.main_window, result)

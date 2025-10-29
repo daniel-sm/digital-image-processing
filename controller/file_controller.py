@@ -34,8 +34,7 @@ class FileController:
             bytes_per_line = 3 * width
             q_image = QImage(img_array.data, width, height, bytes_per_line, QImage.Format_RGB888)
             pixmap = QPixmap.fromImage(q_image).scaled(
-                self.main_window.image_panel.width(), 
-                self.main_window.image_panel.height(),
+                1024, 576,
                 Qt.KeepAspectRatio, 
                 Qt.SmoothTransformation
             )
