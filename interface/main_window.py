@@ -4,6 +4,7 @@ from interface.side_panel import SidePanel
 from interface.image_panel import ImagePanel
 from interface.menu_bar import MenuBar
 
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()

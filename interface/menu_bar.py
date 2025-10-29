@@ -1,5 +1,4 @@
-from PySide6.QtWidgets import QMenuBar, QMenu
-from PySide6.QtGui import QAction
+from PySide6.QtWidgets import QMenuBar
 
 from controller.file_controller import FileController
 from controller.filter_controller import FilterController
@@ -7,123 +6,33 @@ from controller.histogram_controller import HistogramController
 from controller.color_controller import ColorController
 from controller.geometric_controller import GeometricController
 
+from interface.file_menu import FileMenu
+from interface.edit_menu import EditMenu
+from interface.filter_menu import FilterMenu
+from interface.histogram_menu import HistogramMenu
+from interface.color_menu import ColorMenu
+from interface.geometric_menu import GeometricMenu
+from interface.help_menu import HelpMenu
+
+
 class MenuBar(QMenuBar):
     def __init__(self, main_window):
         super().__init__(main_window)
 
-        # guardando referencia para a janela principal e controladores
         self.main_window = main_window
+
+        # controladores
         self.file_controller = FileController(main_window)
         self.filter_controller = FilterController(main_window)
         self.histogram_controller = HistogramController(main_window)
         self.color_controller = ColorController(main_window)
         self.geometric_controller = GeometricController(main_window)
 
-        # criando os menus
-        self._create_menus()
-
-    def _create_menus(self):
-        # configurando menu FILE
-        file_menu = self.addMenu("File")
-
-        open_action = QAction("Open Image...", self)
-        open_action.triggered.connect(self.file_controller.open_image)
-        file_menu.addAction(open_action)
-
-        file_menu.addSeparator()
-
-        reset_action = QAction("Reset Image", self)
-        reset_action.triggered.connect(self.file_controller.reset_image)
-        file_menu.addAction(reset_action)
-
-        close_action = QAction("Close Image", self)
-        close_action.triggered.connect(self.file_controller.close_image)
-        file_menu.addAction(close_action)
-
-        file_menu.addSeparator()
-
-        exit_action = QAction("Exit", self)
-        exit_action.triggered.connect(self.file_controller.exit_application)
-        file_menu.addAction(exit_action)
-
-        # configurando menu EDIT
-        edit_menu = self.addMenu("Edit")
-        edit_menu.addAction(QAction("Undo", self))
-        edit_menu.addAction(QAction("Redo", self))
-        edit_menu.addSeparator()
-        edit_menu.addAction(QAction("Cut", self))
-        edit_menu.addAction(QAction("Copy", self))
-        edit_menu.addAction(QAction("Paste", self))
-
-        # configurando menu FILTERS
-        filters_menu = self.addMenu("Filters")
-
-        negative_action = QAction("Negative", self)
-        negative_action.triggered.connect(self.filter_controller.apply_negative)
-        filters_menu.addAction(negative_action)
-
-        sepia_action = QAction("Sepia", self)
-        sepia_action.triggered.connect(self.filter_controller.apply_sepia)
-        filters_menu.addAction(sepia_action)
-
-        # configurando menu HISTOGRAM
-        histogram_menu = self.addMenu("Histogram")
-
-        show_hist_action = QAction("Show Histogram", self)
-        show_hist_action.triggered.connect(self.histogram_controller.show_histogram)
-        histogram_menu.addAction(show_hist_action)
-
-        show_intensity_hist_action = QAction("Show Intensity Histogram", self)
-        show_intensity_hist_action.triggered.connect(self.histogram_controller.show_intensity_histogram)
-        histogram_menu.addAction(show_intensity_hist_action)
-
-        histogram_menu.addSeparator()
-
-        hist_eq_action = QAction("Histogram Equalization", self)
-        hist_eq_action.triggered.connect(self.histogram_controller.apply_histogram_equalization)
-        histogram_menu.addAction(hist_eq_action)
-
-        # configurando menu COLORS
-        color_menu = self.addMenu("Color")
-
-        adjust_hsv_action = QAction("Adjust HSV", self)
-        adjust_hsv_action.triggered.connect(self.color_controller.open_adjust_hsv_panel)
-        color_menu.addAction(adjust_hsv_action)
-
-        adjust_hsi_action = QAction("Adjust HSI", self)
-        adjust_hsi_action.triggered.connect(self.color_controller.open_adjust_hsi_panel)
-        color_menu.addAction(adjust_hsi_action)
-
-        adjust_rgb_action = QAction("Adjust RGB", self)
-        adjust_rgb_action.triggered.connect(self.color_controller.open_adjust_rgb_panel)
-        color_menu.addAction(adjust_rgb_action)
-
-        color_menu.addSeparator()
-
-        grayscale_menu = color_menu.addMenu("Grayscale")
-
-        gray_simple_action = QAction("Simple Mean", self)
-        gray_simple_action.triggered.connect(self.color_controller.convert_to_grayscale_simple_mean)
-        grayscale_menu.addAction(gray_simple_action)
-
-        gray_weighted_action = QAction("Weighted Mean", self)
-        gray_weighted_action.triggered.connect(self.color_controller.convert_to_grayscale_weighted_mean)
-        grayscale_menu.addAction(gray_weighted_action)
-
-        color_menu.addSeparator()
-
-        # configurando menu GEOMETRIC
-        geometric_menu = self.addMenu("Geometric")
-
-        scale_action = QAction("Scale", self)
-        scale_action.triggered.connect(self.geometric_controller.open_scale_panel)
-        geometric_menu.addAction(scale_action)
-
-        rotate_action = QAction("Rotate", self)
-        rotate_action.triggered.connect(self.geometric_controller.open_rotate_panel)
-        geometric_menu.addAction(rotate_action)
-
-        # configurando menu HELP
-        help_menu = self.addMenu("Help")
-        help_menu.addAction(QAction("Documentation", self))
-        help_menu.addAction(QAction("About", self))
+        # adiciona menus
+        self.addMenu(FileMenu(self, self.file_controller))
+        self.addMenu(EditMenu(self))
+        self.addMenu(FilterMenu(self, self.filter_controller))
+        self.addMenu(HistogramMenu(self, self.histogram_controller))
+        self.addMenu(ColorMenu(self, self.color_controller))
+        self.addMenu(GeometricMenu(self, self.geometric_controller))
+        self.addMenu(HelpMenu(self))

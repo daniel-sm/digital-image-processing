@@ -5,10 +5,10 @@ def update_image(main_window, img_array):
     if img_array is None:
         return
 
-    # Atualiza o estado da janela
+    # atualizando a imagem atual na janela
     main_window.current_image = img_array
 
-    # Converte a imagem NumPy em QPixmap
+    # obtendo dimensoes da imagem
     height, width = img_array.shape[:2]
 
     # verificando as dimensoes da imagem
@@ -28,9 +28,8 @@ def update_image(main_window, img_array):
         raise ValueError("Formato de imagem não suportado.")
 
     # redimensionando a imagem para caber no painel
-    pixmap = QPixmap.fromImage(q_image).scaled(
-        1024, 576, Qt.KeepAspectRatio, Qt.SmoothTransformation
-    )
+    pixmap = QPixmap.fromImage(q_image)
+    # pixmap = pixmap.scaled(1024, 576, Qt.KeepAspectRatio, Qt.SmoothTransformation)
 
     # Atualiza o label
     main_window.image_panel.set_image_pixmap(pixmap)
