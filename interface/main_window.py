@@ -1,4 +1,6 @@
-from PySide6.QtWidgets import QMainWindow
+from PySide6.QtWidgets import QMainWindow, QWidget, QHBoxLayout
+
+from interface.side_panel import SidePanel
 from interface.image_panel import ImagePanel
 from interface.menu_bar import MenuBar
 
@@ -18,6 +20,16 @@ class MainWindow(QMainWindow):
         self.menu_bar = MenuBar(self)
         self.setMenuBar(self.menu_bar)
         
-        # criando painel de imagem
+        # layout central
+        central_widget = QWidget()
+        layout = QHBoxLayout(central_widget)
+
+        # adicionando painel lateral e painel de imagem
+        self.side_panel = SidePanel(self)
         self.image_panel = ImagePanel(self)
-        self.setCentralWidget(self.image_panel)
+
+        layout.addWidget(self.side_panel)
+        layout.addWidget(self.image_panel)
+
+        # definindo o layout central
+        self.setCentralWidget(central_widget)
