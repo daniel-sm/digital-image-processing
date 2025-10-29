@@ -19,7 +19,9 @@ from core.colored_operations import (
     rgb_median_filter,
     rgb_gaussian_filter,
     rgb_laplacian_filter,
-    generic_filter
+    generic_filter,
+    rgb_sobel_x,
+    rgb_sobel_y
 )
 from controller.image_controller import update_image
 from core.image_handler import to_byte, to_double
@@ -205,4 +207,18 @@ class ConvolutionController:
             return
         img = to_double(self.main_window.original_image)
         filtered = rgb_laplacian_filter(img, diagonal, negate)
+        update_image(self.main_window, to_byte(filtered))
+
+    def apply_sobel_x(self):
+        if not self._check_image():
+            return
+        img = to_double(self.main_window.original_image)
+        filtered = rgb_sobel_x(img)
+        update_image(self.main_window, to_byte(filtered))
+
+    def apply_sobel_y(self):
+        if not self._check_image():
+            return
+        img = to_double(self.main_window.original_image)
+        filtered = rgb_sobel_y(img)
         update_image(self.main_window, to_byte(filtered))

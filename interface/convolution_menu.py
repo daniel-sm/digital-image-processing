@@ -33,3 +33,11 @@ class ConvolutionMenu(QMenu):
         laplacian = QAction("Laplacian Filter", self)
         laplacian.triggered.connect(convolution_controller.open_laplacian_panel)
         self.addAction(laplacian)
+
+        sobel_x = QAction("Sobel Filter - X", self)
+        sobel_x.triggered.connect(convolution_controller.apply_sobel_x)
+        self.addAction(sobel_x)
+
+        sobel_y = QAction("Sobel Filter - Y", self)
+        sobel_y.triggered.connect(convolution_controller.apply_sobel_y)
+        self.addAction(sobel_y)

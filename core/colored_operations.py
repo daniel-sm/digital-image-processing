@@ -6,7 +6,9 @@ from core.histogram import histogram, histogram_equalization
 from core.image_handler import to_byte, to_double
 from core.convolution_operations import (
     convolution,
-    mean_filter, 
+    mean_filter,
+    sobel_x_filter,
+    sobel_y_filter, 
     weighted_mean_filter, 
     median_filter,
     gaussian_filter,
@@ -184,3 +186,23 @@ def generic_filter(img: np.ndarray, kernel: np.ndarray) -> np.ndarray:
     img[..., 2] = convolution(img[..., 2], kernel)
     # retornando a imagem filtrada
     return img
+
+def rgb_sobel_x(img: np.ndarray) -> np.ndarray:
+    # convertendo para hsi
+    hsi = rgb_to_hsi(img)
+
+    # aplicando o filtro sobel na direcao x no canal de intensidade
+    sobel_x = sobel_x_filter(hsi[..., 2])
+
+    # retornando a imagem filtrada
+    return sobel_x
+
+def rgb_sobel_y(img: np.ndarray) -> np.ndarray:
+    # convertendo para hsi
+    hsi = rgb_to_hsi(img)
+
+    # aplicando o filtro sobel na direcao y no canal de intensidade
+    sobel_y = sobel_y_filter(hsi[..., 2])
+
+    # retornando a imagem filtrada
+    return sobel_y
