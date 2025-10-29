@@ -1,0 +1,66 @@
+from PySide6.QtWidgets import QMenuBar
+from PySide6.QtGui import QAction
+
+from controller.file_controller import FileController
+from controller.filter_controller import FilterController
+
+class MenuBar(QMenuBar):
+    def __init__(self, main_window):
+        super().__init__(main_window)
+
+        # guardando referencia para a janela principal e controladores
+        self.main_window = main_window
+        self.file_controller = FileController(main_window)
+        self.filter_controller = FilterController(main_window)
+
+        # criando os menus
+        self._create_menus()
+
+    def _create_menus(self):
+        # configurando menu FILE
+        file_menu = self.addMenu("File")
+
+        open_action = QAction("Open Image...", self)
+        open_action.triggered.connect(self.file_controller.open_image)
+        file_menu.addAction(open_action)
+
+        file_menu.addSeparator()
+
+        reset_action = QAction("Reset Image", self)
+        reset_action.triggered.connect(self.file_controller.reset_image)
+        file_menu.addAction(reset_action)
+
+        close_action = QAction("Close Image", self)
+        close_action.triggered.connect(self.file_controller.close_image)
+        file_menu.addAction(close_action)
+
+        file_menu.addSeparator()
+
+        exit_action = QAction("Exit", self)
+        exit_action.triggered.connect(self.file_controller.exit_application)
+        file_menu.addAction(exit_action)
+
+        # configurando menu EDIT
+        edit_menu = self.addMenu("Edit")
+        edit_menu.addAction(QAction("Undo", self))
+        edit_menu.addAction(QAction("Redo", self))
+        edit_menu.addSeparator()
+        edit_menu.addAction(QAction("Cut", self))
+        edit_menu.addAction(QAction("Copy", self))
+        edit_menu.addAction(QAction("Paste", self))
+
+        # configurando menu FILTERS
+        filters_menu = self.addMenu("Filters")
+
+        negative_action = QAction("Negative", self)
+        negative_action.triggered.connect(self.filter_controller.apply_negative)
+        filters_menu.addAction(negative_action)
+
+        sepia_action = QAction("Sepia", self)
+        sepia_action.triggered.connect(self.filter_controller.apply_sepia)
+        filters_menu.addAction(sepia_action)
+
+        # configurando menu de ajuda
+        help_menu = self.addMenu("Help")
+        help_menu.addAction(QAction("Documentation", self))
+        help_menu.addAction(QAction("About", self))

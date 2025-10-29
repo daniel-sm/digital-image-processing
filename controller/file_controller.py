@@ -34,14 +34,13 @@ class FileController:
             bytes_per_line = 3 * width
             q_image = QImage(img_array.data, width, height, bytes_per_line, QImage.Format_RGB888)
             pixmap = QPixmap.fromImage(q_image).scaled(
-                self.main_window.image_label.width(), 
-                self.main_window.image_label.height(), 
+                self.main_window.image_panel.width(), 
+                self.main_window.image_panel.height(),
                 Qt.KeepAspectRatio, 
                 Qt.SmoothTransformation
             )
 
-            self.main_window.image_label.setPixmap(pixmap)
-            # self.main_window.image_label.setMinimumSize(pixmap.size())
+            self.main_window.image_panel.set_image_pixmap(pixmap)
 
     def reset_image(self):
         if self.main_window.original_image is None:
@@ -65,8 +64,7 @@ class FileController:
         if reply == QMessageBox.Yes:
             self.main_window.original_image = None
             self.main_window.current_image = None
-            self.main_window.image_label.clear()
-            self.main_window.image_label.setText("Nenhuma imagem carregada.")
+            self.main_window.image_panel.clear_image()
 
     def exit_application(self):
         # confirmando se o usuario quer sair

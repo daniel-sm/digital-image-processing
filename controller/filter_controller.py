@@ -1,6 +1,4 @@
 from PySide6.QtWidgets import QMainWindow, QMessageBox
-from PySide6.QtGui import QPixmap, QImage
-from PySide6.QtCore import Qt
 
 from core.basic_operations import negative
 from core.colored_operations import sepia
