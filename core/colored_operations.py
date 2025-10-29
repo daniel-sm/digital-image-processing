@@ -4,6 +4,14 @@ import matplotlib.pyplot as plt
 from core.color_conversions import hsi_to_rgb, rgb_to_hsi
 from core.histogram import histogram, histogram_equalization
 from core.image_handler import to_byte, to_double
+from core.convolution_operations import (
+    convolution,
+    mean_filter, 
+    weighted_mean_filter, 
+    median_filter,
+    gaussian_filter,
+    laplacian_filter,
+)
 
 def colored_histogram(rgb: np.ndarray) -> np.ndarray:
     # convertendo a imagem para double
@@ -125,3 +133,54 @@ def sepia(rgb: np.ndarray) -> np.ndarray:
     sepia = np.clip(sepia, 0, 1)
     
     return sepia
+
+def rgb_mean_filter(img: np.ndarray, size: int) -> np.ndarray:
+    # aplicando o filtro de media em cada canal
+    img[..., 0] = mean_filter(img[..., 0], size)
+    img[..., 1] = mean_filter(img[..., 1], size)
+    img[..., 2] = mean_filter(img[..., 2], size)
+    # retornando a imagem filtrada
+    return img
+
+def rgb_weighted_mean_filter(img: np.ndarray, size: int) -> np.ndarray:
+    # aplicando o filtro de media ponderada em cada canal
+    img[..., 0] = weighted_mean_filter(img[..., 0], size)
+    img[..., 1] = weighted_mean_filter(img[..., 1], size)
+    img[..., 2] = weighted_mean_filter(img[..., 2], size)
+    # retornando a imagem filtrada
+    return img
+
+def rgb_median_filter(img: np.ndarray, size: int) -> np.ndarray:
+    # aplicando o filtro de mediana em cada canal
+    img[..., 0] = median_filter(img[..., 0], size)
+    img[..., 1] = median_filter(img[..., 1], size)
+    img[..., 2] = median_filter(img[..., 2], size)
+    # retornando a imagem filtrada
+    return img
+
+def rgb_gaussian_filter(img: np.ndarray, size: int = 3, sigma: float = 1.0) -> np.ndarray:
+    # aplicando o filtro gaussiano em cada canal
+    img[..., 0] = gaussian_filter(img[..., 0], size, sigma)
+    img[..., 1] = gaussian_filter(img[..., 1], size, sigma)
+    img[..., 2] = gaussian_filter(img[..., 2], size, sigma)
+    # retornando a imagem filtrada
+    return img
+
+def rgb_laplacian_filter(img: np.ndarray, diagonal: bool = False, negate: bool = False) -> np.ndarray:
+    # convertendo para hsi
+    hsi = rgb_to_hsi(img)
+
+    # aplicando o filtro laplaciano no canal de intensidade
+    laplacian = laplacian_filter(hsi[..., 2], diagonal, negate)
+
+    # retornando a imagem filtrada
+    return laplacian
+
+def generic_filter(img: np.ndarray, kernel: np.ndarray) -> np.ndarray:
+    print(kernel)
+    # aplicando o filtro generico em cada canal
+    img[..., 0] = convolution(img[..., 0], kernel)
+    img[..., 1] = convolution(img[..., 1], kernel)
+    img[..., 2] = convolution(img[..., 2], kernel)
+    # retornando a imagem filtrada
+    return img

@@ -47,6 +47,7 @@ class FileController:
             return
 
         self.main_window.current_image = self.main_window.original_image.copy()
+        self.main_window.side_panel.clear_panel()
         update_image(self.main_window, self.main_window.current_image)
 
     def close_image(self):
