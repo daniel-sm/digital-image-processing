@@ -1,9 +1,10 @@
-from PySide6.QtWidgets import QMenuBar
+from PySide6.QtWidgets import QMenuBar, QMenu
 from PySide6.QtGui import QAction
 
 from controller.file_controller import FileController
 from controller.filter_controller import FilterController
 from controller.histogram_controller import HistogramController
+from controller.color_controller import ColorController
 
 class MenuBar(QMenuBar):
     def __init__(self, main_window):
@@ -14,6 +15,7 @@ class MenuBar(QMenuBar):
         self.file_controller = FileController(main_window)
         self.filter_controller = FilterController(main_window)
         self.histogram_controller = HistogramController(main_window)
+        self.color_controller = ColorController(main_window)
 
         # criando os menus
         self._create_menus()
@@ -78,6 +80,35 @@ class MenuBar(QMenuBar):
         hist_eq_action = QAction("Histogram Equalization", self)
         hist_eq_action.triggered.connect(self.histogram_controller.apply_histogram_equalization)
         histogram_menu.addAction(hist_eq_action)
+
+        # configurando menu COLORS
+        color_menu = self.addMenu("Color")
+
+        adjust_rgb_action = QAction("Adjust RGB", self)
+        adjust_rgb_action.triggered.connect(self.color_controller.adjust_rgb)
+        color_menu.addAction(adjust_rgb_action)
+
+        adjust_hsv_action = QAction("Adjust HSV", self)
+        adjust_hsv_action.triggered.connect(self.color_controller.adjust_hsv)
+        color_menu.addAction(adjust_hsv_action)
+
+        adjust_hsi_action = QAction("Adjust HSI", self)
+        adjust_hsi_action.triggered.connect(self.color_controller.adjust_hsi)
+        color_menu.addAction(adjust_hsi_action)
+
+        color_menu.addSeparator()
+
+        grayscale_submenu = QMenu("Convert to Grayscale", self)
+
+        simple_mean_action = QAction("Simple Mean", self)
+        simple_mean_action.triggered.connect(self.color_controller.convert_to_grayscale_simple_mean)
+        grayscale_submenu.addAction(simple_mean_action)
+
+        weighted_mean_action = QAction("Weighted Mean", self)
+        weighted_mean_action.triggered.connect(self.color_controller.convert_to_grayscale_weighted_mean)
+        grayscale_submenu.addAction(weighted_mean_action)
+
+        color_menu.addMenu(grayscale_submenu)
 
         # configurando menu de ajuda
         help_menu = self.addMenu("Help")

@@ -33,4 +33,4 @@ class SidePanel(QWidget):
         layout.addStretch()
 
         self.setLayout(layout)
-        self.setFixedWidth(250)  # largura fixa do painel lateral
+        self.setFixedWidth(200)  # largura fixa do painel lateral
