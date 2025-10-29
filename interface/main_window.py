@@ -1,32 +1,49 @@
 from PySide6.QtWidgets import QMainWindow, QMenuBar, QLabel, QScrollArea
-from PySide6.QtGui import QAction, QPixmap
+from PySide6.QtGui import QAction
 from PySide6.QtCore import Qt
+
+from controller.file_controller import FileController
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        # definindo título da janela
+        # definindo dimensoes da janela
+        self.window_width = 1280
+        self.window_height = 720
+
+        # imagem atualmente carregada
+        self.current_image = None
+
+        # definindo título da janela e tamanho fixo
         self.setWindowTitle("Digital Image Processing")
-        # definindo tamanho fixo da janela
-        self.setFixedSize(1280, 720)
+        self.setFixedSize(self.window_width, self.window_height)
 
-        # criando o menu bar
+        # criando o controlador do menu de arquivos
+        self.file_controller = FileController(self)
+
+        # criando elementos da janela principal
         self._create_menu_bar()
-
-        # criando a area de visualização da imagem
         self._create_image_viewer()
 
     def _create_menu_bar(self):
+        # criando o menu bar
         menu_bar = QMenuBar(self)
         self.setMenuBar(menu_bar)
 
-        # configurando menu des arquivos
+        # configurando menu de arquivos
         file_menu = menu_bar.addMenu("File")
-        file_menu.addAction(QAction("Open Image", self))
+        
+        open_image_action = QAction("Open Image...", self)
+        open_image_action.triggered.connect(self.file_controller.open_image)
+        file_menu.addAction(open_image_action)
+
         file_menu.addAction(QAction("Save As...", self))
         file_menu.addSeparator()
-        file_menu.addAction(QAction("Exit", self))
+
+        exit_action = QAction("Exit", self)
+        exit_action.triggered.connect(self.file_controller.exit_application)
+        file_menu.addAction(exit_action)
 
         # configurando menu de edicao
         edit_menu = menu_bar.addMenu("Edit")
@@ -55,22 +72,17 @@ class MainWindow(QMainWindow):
         self.image_label = QLabel()
         self.image_label.setAlignment(Qt.AlignCenter)
 
-        # carregando uma imagem de exemplo
-        pixmap = QPixmap("image.jpg")
-
-        # ajustando o pixmap ao label
-        self.image_label.setPixmap(pixmap)
-        self.image_label.setPixmap(pixmap.scaled(
-            self.width(), 
-            self.height(), 
-            Qt.KeepAspectRatio, 
-            Qt.SmoothTransformation
-        ))
+        # inserindo mensagem inicial
+        self.image_label.setText("Nenhuma imagem carregada.")
+        self.image_label.setMinimumSize(
+            self.window_width * 0.8, 
+            self.window_height * 0.8
+        )
 
         # adicionando o label a um scroll area
-        # scroll_area = QScrollArea()
-        # scroll_area.setWidget(self.image_label)
-        # scroll_area.setAlignment(Qt.AlignCenter)
-        # self.setCentralWidget(scroll_area)
+        scroll_area = QScrollArea()
+        scroll_area.setWidget(self.image_label)
+        scroll_area.setAlignment(Qt.AlignCenter)
 
-        self.setCentralWidget(self.image_label)
+        # definindo o scroll area como widget central
+        self.setCentralWidget(scroll_area)
