@@ -3,6 +3,7 @@ from PySide6.QtGui import QAction
 from PySide6.QtCore import Qt
 
 from controller.file_controller import FileController
+from controller.filter_controller import FilterController
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -13,14 +14,16 @@ class MainWindow(QMainWindow):
         self.window_height = 720
 
         # imagem atualmente carregada
+        self.original_image = None
         self.current_image = None
 
         # definindo título da janela e tamanho fixo
         self.setWindowTitle("Digital Image Processing")
         self.setFixedSize(self.window_width, self.window_height)
 
-        # criando o controlador do menu de arquivos
+        # criando os controladores dos menus
         self.file_controller = FileController(self)
+        self.filters_controller = FilterController(self)
 
         # criando elementos da janela principal
         self._create_menu_bar()
@@ -31,7 +34,7 @@ class MainWindow(QMainWindow):
         menu_bar = QMenuBar(self)
         self.setMenuBar(menu_bar)
 
-        # configurando menu de arquivos
+        # configurando menu FILE
         file_menu = menu_bar.addMenu("File")
         
         open_image_action = QAction("Open Image...", self)
@@ -41,6 +44,15 @@ class MainWindow(QMainWindow):
         file_menu.addAction(QAction("Save As...", self))
         file_menu.addSeparator()
 
+        reset_action = QAction("Reset Image", self)
+        reset_action.triggered.connect(self.file_controller.reset_image)
+        file_menu.addAction(reset_action)
+
+        close_action = QAction("Close Image", self)
+        close_action.triggered.connect(self.file_controller.close_image)
+        file_menu.addAction(close_action)
+
+        file_menu.addSeparator()
         exit_action = QAction("Exit", self)
         exit_action.triggered.connect(self.file_controller.exit_application)
         file_menu.addAction(exit_action)
@@ -54,13 +66,16 @@ class MainWindow(QMainWindow):
         edit_menu.addAction(QAction("Copy", self))
         edit_menu.addAction(QAction("Paste", self))
 
-        # configurando menu de visualizacao
-        view_menu = menu_bar.addMenu("View")
-        view_menu.addAction(QAction("Zoom In", self))
-        view_menu.addAction(QAction("Zoom Out", self))
-        view_menu.addAction(QAction("Reset Zoom", self))
-        view_menu.addSeparator()
-        view_menu.addAction(QAction("Fullscreen", self))
+        # configurando menu FILTERS
+        filters_menu = menu_bar.addMenu("Filters")
+
+        negative_action = QAction("Negative", self)
+        negative_action.triggered.connect(self.filters_controller.apply_negative)
+        filters_menu.addAction(negative_action)
+
+        sepia_action = QAction("Sepia", self)
+        sepia_action.triggered.connect(self.filters_controller.apply_sepia)
+        filters_menu.addAction(sepia_action)
 
         # configurando menu de ajuda
         help_menu = menu_bar.addMenu("Help")
@@ -75,8 +90,8 @@ class MainWindow(QMainWindow):
         # inserindo mensagem inicial
         self.image_label.setText("Nenhuma imagem carregada.")
         self.image_label.setMinimumSize(
-            self.window_width * 0.8, 
-            self.window_height * 0.8
+            self.window_width - 80, 
+            self.window_height - 40,
         )
 
         # adicionando o label a um scroll area

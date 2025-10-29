@@ -4,6 +4,7 @@ from PySide6.QtCore import Qt
 import os
 
 from core.image_handler import open_image
+from controller.image_controller import update_image
 
 class FileController:
     def __init__(self, main_window: QMainWindow):
@@ -25,6 +26,7 @@ class FileController:
                 return
 
             # armazena no estado da janela principal
+            self.main_window.original_image = img_array.copy()
             self.main_window.current_image = img_array
 
             # convertendo a imagem para QPixmap e exibindo
@@ -39,7 +41,32 @@ class FileController:
             )
 
             self.main_window.image_label.setPixmap(pixmap)
-            self.main_window.image_label.setMinimumSize(pixmap.size())
+            # self.main_window.image_label.setMinimumSize(pixmap.size())
+
+    def reset_image(self):
+        if self.main_window.original_image is None:
+            QMessageBox.information(self.main_window, "Aviso", "Nenhuma imagem carregada.")
+            return
+
+        self.main_window.current_image = self.main_window.original_image.copy()
+        update_image(self.main_window, self.main_window.current_image)
+
+    def close_image(self):
+        if self.main_window.current_image is None:
+            QMessageBox.information(self.main_window, "Aviso", "Nenhuma imagem aberta.")
+            return
+
+        reply = QMessageBox.question(
+            self.main_window,
+            "Fechar imagem",
+            "Deseja realmente fechar a imagem atual?",
+            QMessageBox.Yes | QMessageBox.No
+        )
+        if reply == QMessageBox.Yes:
+            self.main_window.original_image = None
+            self.main_window.current_image = None
+            self.main_window.image_label.clear()
+            self.main_window.image_label.setText("Nenhuma imagem carregada.")
 
     def exit_application(self):
         # confirmando se o usuario quer sair
