@@ -17,13 +17,13 @@ def colored_histogram(rgb: np.ndarray) -> np.ndarray:
     # retornando o histograma colorido
     return np.array([r_hist, g_hist, b_hist])
 
-def plot_colored_histogram(histogram: np.ndarray) -> None:
+def plot_colored_histogram(hist: np.ndarray) -> None:
     # definindo as cores
     colors = ['r', 'g', 'b']
     # plotando o histograma colorido
     for i in range(3):
         # plotando o histograma de cada canal
-        plt.plot(histogram[i], color=colors[i])
+        plt.plot(hist[i], color=colors[i])
     # configurando o grafico
     plt.title("Colored Histogram")
     plt.xlim(0, 255)

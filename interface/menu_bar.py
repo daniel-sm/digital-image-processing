@@ -3,6 +3,7 @@ from PySide6.QtGui import QAction
 
 from controller.file_controller import FileController
 from controller.filter_controller import FilterController
+from controller.histogram_controller import HistogramController
 
 class MenuBar(QMenuBar):
     def __init__(self, main_window):
@@ -12,6 +13,7 @@ class MenuBar(QMenuBar):
         self.main_window = main_window
         self.file_controller = FileController(main_window)
         self.filter_controller = FilterController(main_window)
+        self.histogram_controller = HistogramController(main_window)
 
         # criando os menus
         self._create_menus()
@@ -59,6 +61,23 @@ class MenuBar(QMenuBar):
         sepia_action = QAction("Sepia", self)
         sepia_action.triggered.connect(self.filter_controller.apply_sepia)
         filters_menu.addAction(sepia_action)
+
+        # configurando menu HISTOGRAM
+        histogram_menu = self.addMenu("Histogram")
+
+        show_hist_action = QAction("Show Histogram", self)
+        show_hist_action.triggered.connect(self.histogram_controller.show_histogram)
+        histogram_menu.addAction(show_hist_action)
+
+        show_intensity_hist_action = QAction("Show Intensity Histogram", self)
+        show_intensity_hist_action.triggered.connect(self.histogram_controller.show_intensity_histogram)
+        histogram_menu.addAction(show_intensity_hist_action)
+
+        histogram_menu.addSeparator()
+
+        hist_eq_action = QAction("Histogram Equalization", self)
+        hist_eq_action.triggered.connect(self.histogram_controller.apply_histogram_equalization)
+        histogram_menu.addAction(hist_eq_action)
 
         # configurando menu de ajuda
         help_menu = self.addMenu("Help")

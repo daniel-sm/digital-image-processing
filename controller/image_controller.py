@@ -19,5 +19,4 @@ def update_image(main_window, img_array):
     )
 
     # Atualiza o label
-    main_window.image_label.setPixmap(pixmap)
-    main_window.image_label.setMinimumSize(pixmap.size())
+    main_window.image_panel.set_image_pixmap(pixmap)

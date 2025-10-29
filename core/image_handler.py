@@ -3,10 +3,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def to_double(img: np.ndarray) -> np.ndarray:
-    return img.astype(np.double) / 255.0
+    if img.dtype == np.uint8:
+        return img.astype(np.double) / 255.0
+    return img
 
 def to_byte(img: np.ndarray) -> np.ndarray:
-    return (img * 255).astype(np.uint8)
+    if img.dtype != np.uint8:
+        return (img * 255).astype(np.uint8)
+    return img
 
 def open_image(path: str) -> np.ndarray:
     img = cv.imread(path, cv.IMREAD_COLOR_RGB)
