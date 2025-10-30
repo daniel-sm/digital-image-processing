@@ -23,6 +23,7 @@ from core.colored_operations import (
     rgb_sobel_x,
     rgb_sobel_y,
     rgb_magnitude_gradient,
+    rgb_high_boost_filter
 )
 from controller.image_controller import update_image
 from core.image_handler import to_byte, to_double
@@ -230,3 +231,31 @@ class ConvolutionController:
         img = to_double(self.main_window.original_image)
         magnitude = rgb_magnitude_gradient(img)
         update_image(self.main_window, to_byte(magnitude))
+
+    def open_high_boost_panel(self):
+        if not self._check_image():
+            return
+        panel = self.main_window.side_panel
+        panel.clear_panel()
+
+        panel.add_widget(QLabel("Fator de Realce:"))
+
+        k_input = QDoubleSpinBox()
+        k_input.setRange(0.1, 10.0)
+        k_input.setSingleStep(0.1)
+        k_input.setValue(1.0)
+        panel.add_widget(k_input)
+
+        apply_btn = QPushButton("Aplicar")
+        apply_btn.clicked.connect(lambda: self.apply_high_boost_filter(float(k_input.value())))
+        panel.add_widget(apply_btn)
+
+    def apply_high_boost_filter(self, k: float):
+        if not self._check_image():
+            return
+        img = to_double(self.main_window.original_image)
+        filtered = rgb_high_boost_filter(img, k)
+        update_image(self.main_window, to_byte(filtered))
+
+    def open_sharpening_panel(self):
+        pass

@@ -45,3 +45,13 @@ class ConvolutionMenu(QMenu):
         magnitude = QAction("Magnitude - Gradient", self)
         magnitude.triggered.connect(convolution_controller.apply_magnitude_gradient)
         self.addAction(magnitude)
+
+        self.addSeparator()
+
+        high_boost = QAction("High Boost Filter", self)
+        high_boost.triggered.connect(convolution_controller.open_high_boost_panel)
+        self.addAction(high_boost)
+
+        sharpening = QAction("Sharpening - Laplacian", self)
+        sharpening.triggered.connect(convolution_controller.open_sharpening_panel)
+        self.addAction(sharpening)

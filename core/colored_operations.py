@@ -13,7 +13,8 @@ from core.convolution_operations import (
     median_filter,
     gaussian_filter,
     laplacian_filter,
-    sobel_magnitude_filter
+    sobel_magnitude_filter,
+    high_boost_filter,
 )
 
 def colored_histogram(rgb: np.ndarray) -> np.ndarray:
@@ -217,3 +218,16 @@ def rgb_magnitude_gradient(img: np.ndarray) -> np.ndarray:
 
     # retornando a imagem filtrada
     return magnitude
+
+def rgb_high_boost_filter(img: np.ndarray, c: float) -> np.ndarray:
+    # convertendo para hsi
+    hsi = rgb_to_hsi(img)
+
+    # aplicando o filtro de alta frequencia no canal de intensidade
+    hsi[..., 2] = high_boost_filter(hsi[..., 2], c)
+
+    # convertendo de volta para rgb
+    rgb = hsi_to_rgb(hsi)
+
+    # retornando a imagem filtrada
+    return rgb
