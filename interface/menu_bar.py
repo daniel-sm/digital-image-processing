@@ -6,6 +6,7 @@ from controller.histogram_controller import HistogramController
 from controller.convolution_controller import ConvolutionController
 from controller.geometric_controller import GeometricController
 from controller.color_controller import ColorController
+from controller.steganography_controller import SteganographyController
 
 from interface.file_menu import FileMenu
 from interface.image_menu import ImageMenu
@@ -13,6 +14,7 @@ from interface.histogram_menu import HistogramMenu
 from interface.convolution_menu import ConvolutionMenu
 from interface.geometric_menu import GeometricMenu
 from interface.color_menu import ColorMenu
+from interface.steganography_menu import SteganographyMenu
 
 
 class MenuBar(QMenuBar):
@@ -29,6 +31,7 @@ class MenuBar(QMenuBar):
         self.convolution_controller = ConvolutionController(main_window)
         self.geometric_controller = GeometricController(main_window)
         self.color_controller = ColorController(main_window)
+        self.steganography_controller = SteganographyController(main_window)
 
         # adiciona menus
         self.addMenu(FileMenu(self, self.file_controller))
@@ -37,3 +40,4 @@ class MenuBar(QMenuBar):
         self.addMenu(ConvolutionMenu(self, self.convolution_controller))
         self.addMenu(GeometricMenu(self, self.geometric_controller))
         self.addMenu(ColorMenu(self, self.color_controller))
+        self.addMenu(SteganographyMenu(self, self.steganography_controller))
