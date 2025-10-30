@@ -1,5 +1,7 @@
 import numpy as np
 
+from core.color_conversions import rgb_to_hsv, hsv_to_rgb
+
 def fourier_transform(img: np.ndarray) -> np.ndarray:
     # obtendo as dimensoes da imagem
     img_height, img_width = img.shape
@@ -72,3 +74,74 @@ def inverse_fast_fourier_transform(fourier: np.ndarray) -> np.ndarray:
 def shift_fast_fourier(fourier: np.ndarray) -> np.ndarray:
     # aplicando o deslocamento da transformada rapida de fourier
     return np.fft.fftshift(fourier)
+
+def colored_fourier(rgb: np.ndarray) -> np.ndarray:
+    #convertendo para hsv
+    hsv = rgb_to_hsv(rgb)
+
+    # isolando os canais
+    hue = hsv[..., 0]
+    saturation = hsv[..., 1]
+    value = hsv[..., 2]
+
+    # aplicando a transformada de fourier no canal de intensidade
+    fourier = fourier_transform(value)
+
+    # reconstruindo a transformada colorida
+    result = np.stack((hue, saturation, fourier), axis=-1)
+
+    # retornando a transformada RGB
+    return result
+
+def colored_inverse_fourier(fourier: np.ndarray) -> np.ndarray:
+    # isolando os canais
+    H = np.real(fourier[..., 0])
+    S = np.real(fourier[..., 1])
+    # calculando a inversa
+    V = inverse_fourier_transform(fourier[..., 2])
+    # montando a iamgem reconstruida
+    result = np.stack((H, S, V), axis=-1)
+    # convertendo para rgb
+    rgb = hsv_to_rgb(result)
+    # retornando a imagem
+    return rgb
+
+def colored_fast_fourier(rgb: np.ndarray) -> np.ndarray:
+    #convertendo para hsv
+    hsv = rgb_to_hsv(rgb)
+
+    # isolando os canais
+    hue = hsv[..., 0]
+    saturation = hsv[..., 1]
+    value = hsv[..., 2]
+
+    # aplicando a transformada de fourier no canal de intensidade
+    fourier = fast_fourier_transform(value)
+
+    # reconstruindo a transformada colorida
+    result = np.stack((hue, saturation, fourier), axis=-1)
+
+    # retornando a transformada RGB
+    return result
+
+def colored_inverse_fast_fourier(fourier: np.ndarray) -> np.ndarray:
+    # isolando os canais
+    H = np.real(fourier[..., 0])
+    S = np.real(fourier[..., 1])
+    # calculando a inversa
+    V = np.real(inverse_fast_fourier_transform(fourier[..., 2]))
+    # montando a iamgem reconstruida
+    result = np.stack((H, S, V), axis=-1)
+    # convertendo para rgb
+    rgb = hsv_to_rgb(result)
+    # retornando a imagem
+    return rgb
+
+def view_fourier_transform(fourier: np.ndarray) -> np.ndarray:
+    shifted = shift_fourier(fourier[..., 2])
+    # obtendo a magnitude da transformada
+    magnitude = np.abs(shifted)
+    # aplicando logaritmo para melhor visualizacao
+    magnitude = (magnitude / np.max(magnitude)) * 1000
+    # retornando a magnitude para visualizacao
+    return magnitude
