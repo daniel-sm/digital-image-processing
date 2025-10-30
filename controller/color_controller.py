@@ -22,24 +22,24 @@ class ColorController:
         self.main_window = main_window
 
     def convert_to_grayscale_simple_mean(self):
-        if self.main_window.current_image is None:
+        if self.main_window.original_image is None:
             QMessageBox.warning(self.main_window, "Erro", "Nenhuma imagem aberta.")
             return
         # convertendo para o intervalo [0,1]
-        img_double = to_double(self.main_window.current_image)
+        img_double = to_double(self.main_window.original_image)
         # aplicando a conversao usando media simples
         gray_img = rgb_to_gray_average(img_double)
         # convertendo de volta para o intervale [0,255]
         img_byte = to_byte(gray_img)
         # atualiza a imagem no painel
         update_image(self.main_window, img_byte)
- 
+
     def convert_to_grayscale_weighted_mean(self):
-        if self.main_window.current_image is None:
+        if self.main_window.original_image is None:
             QMessageBox.warning(self.main_window, "Erro", "Nenhuma imagem aberta.")
             return
         # convertendo para o intervalo [0,1]
-        img_double = to_double(self.main_window.current_image)
+        img_double = to_double(self.main_window.original_image)
         # aplicando a conversao usando media simples
         gray_img = rgb_to_gray(img_double)
         # convertendo de volta para o intervale [0,255]
