@@ -1,8 +1,11 @@
 from PySide6.QtWidgets import QMainWindow, QMessageBox, QLabel, QSlider
 from PySide6.QtCore import Qt
 
-from core.basic_operations import brightness, negative
-from core.colored_operations import sepia
+from core.basic_operations import (
+    brightness,
+    negative,
+)
+from core.colored_operations import rgb_contrast, sepia
 from core.image_handler import to_byte, to_double
 from controller.image_controller import update_image
 
@@ -40,10 +43,12 @@ class ImageMenuController:
         result = to_byte(brightness(img, value))
         update_image(self.main_window, result)
 
-    def open_contrast_panel(self):
+    def apply_contrast(self):
         if self._check_image() is False:
             return
-        print("Opening Contrast Panel")
+        img = to_double(self.main_window.original_image)
+        result = to_byte(rgb_contrast(img))
+        update_image(self.main_window, result)
 
     def open_threshold_panel(self):
         if self._check_image() is False:

@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+from core.basic_operations import contrast
 from core.color_conversions import hsi_to_rgb, rgb_to_hsi
 from core.histogram import histogram, histogram_equalization
 from core.image_handler import to_byte, to_double
@@ -17,6 +18,14 @@ from core.convolution_operations import (
     high_boost_filter,
     sharpening_with_laplacian,
 )
+
+def rgb_contrast(rgb: np.ndarray) -> np.ndarray:
+    # aplicando o contraste em cada canal
+    rgb[..., 0] = contrast(rgb[..., 0])
+    rgb[..., 1] = contrast(rgb[..., 1])
+    rgb[..., 2] = contrast(rgb[..., 2])
+    # retornando a imagem com contraste
+    return rgb
 
 def colored_histogram(rgb: np.ndarray) -> np.ndarray:
     # convertendo a imagem para double

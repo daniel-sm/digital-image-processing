@@ -10,7 +10,7 @@ class ImageMenu(QMenu):
         self.addAction(brightness)
 
         contrast = QAction("Contrast", self)
-        contrast.triggered.connect(image_controller.open_contrast_panel)
+        contrast.triggered.connect(image_controller.apply_contrast)
         self.addAction(contrast)
 
         self.addSeparator()
