@@ -1,7 +1,7 @@
 import numpy as np
 
 def brightness(img: np.ndarray, k: np.double = 0.5) -> np.ndarray:
-    return (img * k)
+    return np.clip(img * k, 0, 1)
 
 def negative(img: np.ndarray) -> np.ndarray:
     return (1 - img)
