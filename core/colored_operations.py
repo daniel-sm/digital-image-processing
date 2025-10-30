@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from core.basic_operations import contrast
+from core.basic_operations import contrast, intensity_level_slicing, piecewise_linear
 from core.color_conversions import hsi_to_rgb, rgb_to_hsi
 from core.histogram import histogram, histogram_equalization
 from core.image_handler import to_byte, to_double
@@ -25,6 +25,36 @@ def rgb_contrast(rgb: np.ndarray) -> np.ndarray:
     rgb[..., 1] = contrast(rgb[..., 1])
     rgb[..., 2] = contrast(rgb[..., 2])
     # retornando a imagem com contraste
+    return rgb
+
+def rgb_intensity_slicing(
+        img: np.ndarray, 
+        a: float = 0, 
+        b: float = 1, 
+        highlight: bool = True, 
+        binary: bool = False
+    ) -> np.ndarray:
+        # convertendo a imagem para hsi
+        hsi = rgb_to_hsi(img)
+        # aplicando o fatiamento de nivel de intensidade no canal de intensidade
+        hsi[..., 2] = intensity_level_slicing(hsi[..., 2], a, b, highlight, binary)
+        # convertendo de volta para rgb
+        rgb = hsi_to_rgb(hsi)
+        # retornando a imagem alterada
+        return rgb
+
+def rgb_piecewise_linear(
+        img: np.ndarray, 
+        p1: list[float], 
+        p2: list[float]
+    )  -> np.ndarray:
+    # convertendo a imagem para hsi
+    hsi = rgb_to_hsi(img)
+    # aplicando a transformacao piecewise linear no canal de intensidade
+    hsi[..., 2] = piecewise_linear(hsi[..., 2], p1, p2)
+    # convertendo de volta para rgb
+    rgb = hsi_to_rgb(hsi)
+    # retornando a imagem alterada
     return rgb
 
 def colored_histogram(rgb: np.ndarray) -> np.ndarray:

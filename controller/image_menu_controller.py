@@ -1,5 +1,12 @@
-from PySide6.QtWidgets import QMainWindow, QMessageBox, QLabel, QSlider, QDoubleSpinBox, QPushButton
 from PySide6.QtCore import Qt
+from PySide6.QtWidgets import (
+    QMainWindow, QMessageBox, 
+    QLabel, 
+    QSlider, 
+    QDoubleSpinBox, 
+    QPushButton, 
+    QCheckBox,
+)
 
 from core.basic_operations import (
     brightness,
@@ -8,7 +15,12 @@ from core.basic_operations import (
     threshold,
     log
 )
-from core.colored_operations import rgb_contrast, sepia
+from core.colored_operations import (
+    rgb_contrast, 
+    rgb_intensity_slicing, 
+    sepia, 
+    rgb_piecewise_linear,
+)
 from core.image_handler import to_byte, to_double
 from controller.image_controller import update_image
 
@@ -137,12 +149,115 @@ class ImageMenuController:
     def open_intensity_level_panel(self):
         if self._check_image() is False:
             return
-        print("Opening Intensity Level Panel")
-    
+
+        panel = self.main_window.side_panel
+        panel.clear_panel()
+
+        # Intervalo A
+        panel.add_widget(QLabel("Interval start:"))
+        a_input = QDoubleSpinBox()
+        a_input.setRange(0.0, 1.0)
+        a_input.setSingleStep(0.05)
+        a_input.setValue(0.2)
+        panel.add_widget(a_input)
+
+        # Intervalo B
+        panel.add_widget(QLabel("Interval end:"))
+        b_input = QDoubleSpinBox()
+        b_input.setRange(0.0, 1.0)
+        b_input.setSingleStep(0.05)
+        b_input.setValue(0.8)
+        panel.add_widget(b_input)
+
+        # Opções de comportamento
+        highlight_check = QCheckBox("Highlight in Interval")
+        highlight_check.setChecked(True)
+        binary_check = QCheckBox("Binary Mode")
+        panel.add_widget(highlight_check)
+        panel.add_widget(binary_check)
+
+        # Botão aplicar
+        apply_btn = QPushButton("Apply")
+        panel.add_widget(apply_btn)
+
+        apply_btn.clicked.connect(
+            lambda: self.apply_intensity_level(
+                float(a_input.value()),
+                float(b_input.value()),
+                highlight_check.isChecked(),
+                binary_check.isChecked(),
+            )
+        )
+
+    def apply_intensity_level(self, a, b, highlight, binary):
+        if self.main_window.original_image is None:
+            return
+
+        img = to_double(self.main_window.original_image)
+        filtered = rgb_intensity_slicing(img, a, b, highlight, binary)
+        update_image(self.main_window, to_byte(filtered))
+
     def open_piecewise_linear_panel(self):
         if self._check_image() is False:
             return
-        print("Opening Piecewise Linear Panel")
+
+        panel = self.main_window.side_panel
+        panel.clear_panel()
+
+        # Ponto 1 (p1)
+        panel.add_widget(QLabel("Ponto P1 (x1, y1):"))
+
+        x1_input = QDoubleSpinBox()
+        x1_input.setRange(0.0, 1.0)
+        x1_input.setSingleStep(0.05)
+        x1_input.setValue(0.2)
+
+        y1_input = QDoubleSpinBox()
+        y1_input.setRange(0.0, 1.0)
+        y1_input.setSingleStep(0.05)
+        y1_input.setValue(0.2)
+
+        panel.add_widget(QLabel("x1:"))
+        panel.add_widget(x1_input)
+        panel.add_widget(QLabel("y1:"))
+        panel.add_widget(y1_input)
+
+        # Ponto 2 (p2)
+        panel.add_widget(QLabel("Ponto P2 (x2, y2):"))
+
+        x2_input = QDoubleSpinBox()
+        x2_input.setRange(0.0, 1.0)
+        x2_input.setSingleStep(0.05)
+        x2_input.setValue(0.8)
+
+        y2_input = QDoubleSpinBox()
+        y2_input.setRange(0.0, 1.0)
+        y2_input.setSingleStep(0.05)
+        y2_input.setValue(0.8)
+
+        panel.add_widget(QLabel("x2:"))
+        panel.add_widget(x2_input)
+        panel.add_widget(QLabel("y2:"))
+        panel.add_widget(y2_input)
+
+        # Botão aplicar
+        apply_btn = QPushButton("Apply")
+        panel.add_widget(apply_btn)
+
+        apply_btn.clicked.connect(
+            lambda: self.apply_piecewise_linear(
+                [float(x1_input.value()), float(y1_input.value())],
+                [float(x2_input.value()), float(y2_input.value())],
+            )
+        )
+
+    def apply_piecewise_linear(self, p1, p2):
+        if self.main_window.original_image is None:
+            return
+
+        img = to_double(self.main_window.original_image)
+        filtered = rgb_piecewise_linear(img, p1, p2)
+        update_image(self.main_window, to_byte(filtered))
 
     def apply_negative(self):
         if self._check_image() is False:
