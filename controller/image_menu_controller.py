@@ -1,10 +1,11 @@
-from PySide6.QtWidgets import QMainWindow, QMessageBox, QLabel, QSlider
+from PySide6.QtWidgets import QMainWindow, QMessageBox, QLabel, QSlider, QDoubleSpinBox, QPushButton
 from PySide6.QtCore import Qt
 
 from core.basic_operations import (
     brightness,
     negative,
     threshold,
+    log
 )
 from core.colored_operations import rgb_contrast, sepia
 from core.image_handler import to_byte, to_double
@@ -78,7 +79,27 @@ class ImageMenuController:
     def open_log_panel(self):
         if self._check_image() is False:
             return
-        print("Opening Log Panel")
+        panel = self.main_window.side_panel
+        panel.clear_panel()
+
+        panel.add_widget(QLabel("Multiplier:"))
+
+        k_input = QDoubleSpinBox()
+        k_input.setRange(0.1, 2.0)
+        k_input.setSingleStep(0.01)
+        k_input.setValue(1.0)
+        panel.add_widget(k_input)
+
+        apply_btn = QPushButton("Aplicar")
+        apply_btn.clicked.connect(lambda: self._apply_log(float(k_input.value())))
+        panel.add_widget(apply_btn)
+
+    def _apply_log(self, value):
+        if self._check_image() is False:
+            return
+        img = to_double(self.main_window.original_image)
+        result = to_byte(log(img, value))
+        update_image(self.main_window, result)
 
     def open_gamma_panel(self):
         if self._check_image() is False:

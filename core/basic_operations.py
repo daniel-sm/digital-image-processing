@@ -17,7 +17,7 @@ def contrast(img: np.ndarray) -> np.ndarray:
     return new
 
 def log(img: np.ndarray, c: np.double = 1) -> np.ndarray:
-    return c * np.log2(1 + img)
+    return np.clip(c * np.log2(1 + img), 0, 1)
 
 def gamma(img: np.ndarray, y: np.double, c: np.double = 1) -> np.ndarray:
     return c * np.pow(img, y) 
