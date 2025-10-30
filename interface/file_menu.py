@@ -9,6 +9,10 @@ class FileMenu(QMenu):
         open_action.triggered.connect(file_controller.open_image)
         self.addAction(open_action)
 
+        save_action = QAction("Save Image...", self)
+        save_action.triggered.connect(file_controller.save_image)
+        self.addAction(save_action)
+
         self.addSeparator()
 
         reset_action = QAction("Reset Image", self)

@@ -3,7 +3,7 @@ from PySide6.QtGui import QPixmap, QImage
 from PySide6.QtCore import Qt
 import os
 
-from core.image_handler import open_image
+from core.image_handler import open_image, save_image
 from controller.image_controller import update_image
 
 class FileController:
@@ -40,6 +40,30 @@ class FileController:
             )
 
             self.main_window.image_panel.set_image_pixmap(pixmap)
+
+    def save_image(self):
+        if self.main_window.current_image is None:
+            QMessageBox.warning(self.main_window, "Aviso", "Nenhuma imagem para salvar.")
+            return
+        
+        # dialogo para salvar arquivo
+        options = QFileDialog.Options()
+        file_path, _ = QFileDialog.getSaveFileName(
+            self.main_window,
+            "Salvar Imagem Como",
+            "",
+            "Images (*.jpg *.jpeg *.png *.bmp);;All Files (*)",
+            options=options
+        )
+        if not file_path:
+            return # usuario cancelou
+
+        try:
+            img = self.main_window.current_image
+            save_image(file_path, img)
+            QMessageBox.information(self.main_window, "Sucesso", f"Imagem salva em:\n{file_path}")
+        except Exception as e:
+            QMessageBox.critical(self.main_window, "Erro ao salvar", f"Não foi possível salvar a imagem:\n{e}")
 
     def reset_image(self):
         if self.main_window.original_image is None:
