@@ -1,4 +1,5 @@
 from PySide6.QtWidgets import QSlider, QLabel, QMessageBox
+from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtCore import Qt
 
 from controller.image_controller import update_image
@@ -22,26 +23,38 @@ class GeometricController:
         slider_x.setMinimum(1)
         slider_x.setMaximum(100)
         slider_x.setValue(50)
-        slider_x.valueChanged.connect(lambda v: self._apply_scale(slider_x.value()/50, slider_y.value()/50))
+        panel.add_widget(label_x)
+        panel.add_widget(slider_x)
 
         label_y = QLabel("Scale Y (%)")
         slider_y = QSlider(Qt.Horizontal)
         slider_y.setMinimum(1)
         slider_y.setMaximum(100)
         slider_y.setValue(50)
-        slider_y.valueChanged.connect(lambda v: self._apply_scale(slider_x.value()/50, slider_y.value()/50))
-
-        panel.add_widget(label_x)
-        panel.add_widget(slider_x)
         panel.add_widget(label_y)
         panel.add_widget(slider_y)
+
+        # cada vez que se muda um slider, aplica escala
+        slider_x.valueChanged.connect(lambda v: self._apply_scale(slider_x.value()/50.0, slider_y.value()/50.0))
+        slider_y.valueChanged.connect(lambda v: self._apply_scale(slider_x.value()/50.0, slider_y.value()/50.0))
 
     def _apply_scale(self, sx, sy):
         if self.main_window.original_image is None:
             return
+
         img = to_double(self.main_window.original_image)
         result = to_byte(scale_rgb(img, sx, sy))
-        update_image(self.main_window, result)
+        self.main_window.current_image = result
+        # diretamente definir pixmap para ver a escala real
+        height, width = result.shape[:2]
+        if len(result.shape) == 2:
+            q_image = QImage(result.data, width, height, width, QImage.Format_Grayscale8)
+        else:
+            bytes_per_line = 3 * width
+            q_image = QImage(result.data, width, height, bytes_per_line, QImage.Format_RGB888)
+        pixmap = QPixmap.fromImage(q_image)
+        # nao redimensiona para caber, mostra no tamanho real
+        self.main_window.image_panel.set_image_pixmap(pixmap)
 
     def open_rotate_panel(self):
         if self.main_window.original_image is None:
