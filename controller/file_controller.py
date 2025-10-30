@@ -57,6 +57,10 @@ class FileController:
 
         self.main_window.current_image = self.main_window.original_image.copy()
         self.main_window.side_panel.clear_panel()
+
+        self.main_window.menu_bar.fourier_controller.fourier = None
+        self.main_window.menu_bar.fourier_controller.fast_fourier = None
+
         update_image(self.main_window, self.main_window.current_image)
 
     def close_image(self):
@@ -73,6 +77,10 @@ class FileController:
         if reply == QMessageBox.Yes:
             self.main_window.original_image = None
             self.main_window.current_image = None
+            
+            self.main_window.menu_bar.fourier_controller.fourier = None
+            self.main_window.menu_bar.fourier_controller.fast_fourier = None
+            
             self.main_window.image_panel.clear_image()
 
     def exit_application(self):
