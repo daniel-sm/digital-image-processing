@@ -46,7 +46,6 @@ class SteganographyController:
         img = to_byte(self.main_window.current_image)
         try:
             msg = read_steganography(img)
-            print(msg)
             if not msg:
                 QMessageBox.information(self.main_window, "Mensagem", "Nenhuma mensagem encontrada.")
             else:

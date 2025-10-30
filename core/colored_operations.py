@@ -221,7 +221,6 @@ def rgb_laplacian_filter(img: np.ndarray, diagonal: bool = False, negate: bool =
     return laplacian
 
 def generic_filter(img: np.ndarray, kernel: np.ndarray) -> np.ndarray:
-    print(kernel)
     # aplicando o filtro generico em cada canal
     img[..., 0] = convolution(img[..., 0], kernel)
     img[..., 1] = convolution(img[..., 1], kernel)
