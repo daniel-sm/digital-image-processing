@@ -19,7 +19,7 @@ class ImageMenu(QMenu):
         threshold.triggered.connect(image_controller.open_threshold_panel)
         self.addAction(threshold)
 
-        log = QAction("Logarithmic Operation", self)
+        log = QAction("Logarithmic", self)
         log.triggered.connect(image_controller.open_log_panel)
         self.addAction(log)
 

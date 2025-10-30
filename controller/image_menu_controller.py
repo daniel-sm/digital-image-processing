@@ -3,6 +3,7 @@ from PySide6.QtCore import Qt
 
 from core.basic_operations import (
     brightness,
+    gamma,
     negative,
     threshold,
     log
@@ -104,8 +105,35 @@ class ImageMenuController:
     def open_gamma_panel(self):
         if self._check_image() is False:
             return
-        print("Opening Gamma Panel")
-    
+        panel = self.main_window.side_panel
+        panel.clear_panel()
+
+        panel.add_widget(QLabel("Lambda:"))
+        y_input = QDoubleSpinBox()
+        y_input.setRange(0.1, 5.0)
+        y_input.setSingleStep(0.05)
+        y_input.setValue(1.0)
+        panel.add_widget(y_input)
+
+        panel.add_widget(QLabel("Multiplier:"))
+        k_input = QDoubleSpinBox()
+        k_input.setRange(0.1, 2.0)
+        k_input.setSingleStep(0.01)
+        k_input.setValue(1.0)
+        panel.add_widget(k_input)
+
+        apply_btn = QPushButton("Aplicar")
+        apply_btn.clicked.connect(lambda: self._apply_gamma(
+            float(y_input.value()), float(k_input.value())))
+        panel.add_widget(apply_btn)
+
+    def _apply_gamma(self, y, c):
+        if self._check_image() is False:
+            return
+        img = to_double(self.main_window.original_image)
+        result = to_byte(gamma(img, y, c))
+        update_image(self.main_window, result)
+
     def open_intensity_level_panel(self):
         if self._check_image() is False:
             return
