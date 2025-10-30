@@ -4,6 +4,7 @@ from PySide6.QtCore import Qt
 from core.basic_operations import (
     brightness,
     negative,
+    threshold,
 )
 from core.colored_operations import rgb_contrast, sepia
 from core.image_handler import to_byte, to_double
@@ -53,8 +54,27 @@ class ImageMenuController:
     def open_threshold_panel(self):
         if self._check_image() is False:
             return
-        print("Opening Threshold Panel")
-    
+        
+        panel = self.main_window.side_panel
+        panel.clear_panel()
+
+        label_threshold = QLabel("Threshold:")
+        slider_threshold = QSlider(Qt.Horizontal)
+        slider_threshold.setMinimum(0)
+        slider_threshold.setMaximum(255)
+        slider_threshold.setValue(128)
+        slider_threshold.valueChanged.connect(lambda v: self._apply_threshold(v/255.0))
+
+        panel.add_widget(label_threshold)
+        panel.add_widget(slider_threshold)
+
+    def _apply_threshold(self, value):
+        if self._check_image() is False:
+            return
+        img = to_double(self.main_window.original_image)
+        result = to_byte(threshold(img, value))
+        update_image(self.main_window, result)  
+
     def open_log_panel(self):
         if self._check_image() is False:
             return
