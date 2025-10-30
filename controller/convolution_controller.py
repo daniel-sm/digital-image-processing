@@ -23,7 +23,8 @@ from core.colored_operations import (
     rgb_sobel_x,
     rgb_sobel_y,
     rgb_magnitude_gradient,
-    rgb_high_boost_filter
+    rgb_high_boost_filter,
+    rgb_sharpening_laplacian_filter
 )
 from controller.image_controller import update_image
 from core.image_handler import to_byte, to_double
@@ -258,4 +259,39 @@ class ConvolutionController:
         update_image(self.main_window, to_byte(filtered))
 
     def open_sharpening_panel(self):
-        pass
+        if not self._check_image():
+            return
+        panel = self.main_window.side_panel
+        panel.clear_panel()
+        
+        panel.add_widget(QLabel("Fator de Realce:"))
+
+        k_input = QDoubleSpinBox()
+        k_input.setRange(0.0, 10.0)
+        k_input.setSingleStep(0.1)
+        k_input.setValue(1.0)
+        panel.add_widget(k_input)
+
+        panel.add_widget(QLabel("Configuração - Laplaciano:"))
+
+        diagonal_check = QCheckBox("Incluir diagonais")
+        negate_check = QCheckBox("Centro positivo")
+
+        panel.add_widget(diagonal_check)
+        panel.add_widget(negate_check)
+
+        apply_btn = QPushButton("Aplicar")
+        apply_btn.clicked.connect(lambda: self.apply_sharpening_filter(
+            -float(k_input.value()),
+            diagonal_check.isChecked(), 
+            negate_check.isChecked()
+        ))
+        panel.add_widget(apply_btn)
+
+    def apply_sharpening_filter(self, c: float, diagonal: bool, negate: bool):
+        if not self._check_image():
+            return
+        img = to_double(self.main_window.original_image)
+        sharpened = rgb_sharpening_laplacian_filter(img, c, diagonal, negate)
+        update_image(self.main_window, to_byte(sharpened))
+    

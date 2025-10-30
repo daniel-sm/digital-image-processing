@@ -15,6 +15,7 @@ from core.convolution_operations import (
     laplacian_filter,
     sobel_magnitude_filter,
     high_boost_filter,
+    sharpening_with_laplacian,
 )
 
 def colored_histogram(rgb: np.ndarray) -> np.ndarray:
@@ -229,5 +230,15 @@ def rgb_high_boost_filter(img: np.ndarray, c: float) -> np.ndarray:
     # convertendo de volta para rgb
     rgb = hsi_to_rgb(hsi)
 
+    # retornando a imagem filtrada
+    return rgb
+
+def rgb_sharpening_laplacian_filter(img: np.ndarray, c: float, diagonal: bool, negate: bool) -> np.ndarray:
+    # convertendo para hsi
+    hsi = rgb_to_hsi(img)
+    # aplicando o filtro de laplaciano no canal de intensidade
+    hsi[..., 2] = sharpening_with_laplacian(hsi[..., 2], c, diagonal, negate)
+    # convertendo de volta para rgb
+    rgb = hsi_to_rgb(hsi)
     # retornando a imagem filtrada
     return rgb
